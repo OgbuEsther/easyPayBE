@@ -4,6 +4,6 @@ import { MakeTransfer, sendPayMinusPlan } from "../../controller/admin/admindash
 const AdminRoutes = Router()
 
 AdminRoutes.post("/paysalary/:UserId/:WalletID", MakeTransfer)
-AdminRoutes.post("/paysalarywithplan/:UserId/:WalletID", sendPayMinusPlan)
+AdminRoutes.post("/paysalarywithhouseplan/:UserId/:WalletID", sendPayMinusPlan)
 
 export default AdminRoutes

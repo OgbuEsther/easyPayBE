@@ -114,10 +114,12 @@ export const sendPayMinusPlan = async(req:Request , res:Response)=>{
   _id : getReciever?._id
         });
 
+        await getReciever?.houseRentPlan?.push(new mongoose.Types.ObjectId(creating?._id))
+
 if(getReciever?.houseRentPlan && getUser){
     if (amount > getUserWallet?.balance!) {
         return res.status(404).json({
-            message: "insufficent fund.",
+            message: "insufficent fund. or staff doesn't belong to this plan",
         });
     }else {
         // undating the sender walllet
