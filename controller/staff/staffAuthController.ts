@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 
 export const staffSignup = async (req: Request, res: Response) => {
   try {
-    const { companyName, email, yourName, password, position } = req.body;
+    const { companyName, email, yourName, password, position ,walletNumber } = req.body;
 
      const salt = await bcrypt.genSalt(10);
      const hash = await bcrypt.hash(password, salt);
@@ -22,12 +22,13 @@ export const staffSignup = async (req: Request, res: Response) => {
       yourName,
       password: hash,
       position,
+      walletNumber: generateNumber,
     });
 
      const createWallet = await staffWalletModel.create({
        _id: staff?._id,
        balance: 15000,
-       walletNumber: generateNumber,
+  
        credit: 0,
        debit: 0,
      });

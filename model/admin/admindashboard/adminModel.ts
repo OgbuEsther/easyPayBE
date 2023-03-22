@@ -1,6 +1,6 @@
 export interface adminWalletProps {
   balance: number;
-  walletNumber: number;
+ 
   credit: number;
   debit: number;
 }

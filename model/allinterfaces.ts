@@ -5,6 +5,7 @@ export interface adminSignUp {
   password: string;
   wallet: {}[];
   transactionHistory: {}[];
+  walletNumber: number;
 }
 
 export interface staffSignUp {
@@ -13,6 +14,7 @@ export interface staffSignUp {
   password: string;
   companyName: string;
   position: string;
+  walletNumber: number;
   wallet: {}[];
   transactionHistory: {}[];
   savingsPlan: {}[];

@@ -9,10 +9,7 @@ const staffWalletSchema = new mongoose.Schema<staffWalletProps>({
     required: true,
   },
 
-  walletNumber: {
-    type: Number,
-    required: true,
-  },
+ 
   credit: {
     type: Number,
   },

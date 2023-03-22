@@ -6,7 +6,7 @@ import adminWalletModel from "../../model/admin/admindashboard/adminWallets";
 
 export const adminSignup = async (req: Request, res: Response) => {
   try {
-    const { companyName, companyEmail, yourName, password } = req.body;
+    const { companyName, companyEmail, yourName, password ,walletNumber  } = req.body;
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
@@ -19,12 +19,13 @@ export const adminSignup = async (req: Request, res: Response) => {
       companyEmail,
       yourName,
       password: hash,
+       walletNumber: generateNumber,
     });
 
     const createWallet = await adminWalletModel.create({
       _id: admin?._id,
       balance: 15000,
-      walletNumber: generateNumber,
+     
       credit: 0,
       debit: 0,
     });

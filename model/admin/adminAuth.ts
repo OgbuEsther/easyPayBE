@@ -10,6 +10,7 @@ const AdminAuth = new mongoose.Schema<adminSignUp>(
       unique: true,
       required: [true, "please enter your company name"],
     },
+    
     companyEmail: {
       type: String,
       unique: true,
@@ -25,6 +26,7 @@ const AdminAuth = new mongoose.Schema<adminSignUp>(
       type: String,
       required: [true, "please enter a password"],
     },
+    walletNumber : Number,
     wallet: [
       {
         type: mongoose.Schema.Types.ObjectId,
