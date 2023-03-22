@@ -10,7 +10,10 @@ percentageRate :{
 },
 totalBal : {
     type : Number,
-}
+},
+subscribe : {
+    type : Boolean,
+  },
 })
 
 const investModel = mongoose.model<investPlan>("staffInvestmentPlan", investSchema)

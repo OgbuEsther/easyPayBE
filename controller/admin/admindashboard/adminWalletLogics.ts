@@ -96,8 +96,6 @@ export const sendPayMinusPlan = async(req:Request , res:Response)=>{
         const {walletNumber, amount } = req.body
         const getDate = new Date().toDateString()
 
-       
-
 		const referenceGeneratedNumber = Math.floor(Math.random() * 67485753) + 243;
 
 		//RECIEVER ACCOUNT
