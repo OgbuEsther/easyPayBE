@@ -4,6 +4,7 @@ import dbConfig from "./config/db";
 import adminAuthRoutes from "./router/admin/adminAuth";
 import staffAuthRoutes from "./router/staff/staffAuthRoutes";
 import AdminRoutes from "./router/admin/adminRoutes";
+import staffRoutes from "./router/staff/staffRoutes";
 
 const PORT = process.env.PORT || 2023;
 
@@ -29,6 +30,9 @@ app.use("/staff", staffAuthRoutes);
 
 //admin dashboard routes
 app.use("/pay" ,AdminRoutes)
+
+//staff dashboard routes
+app.use("/plans" , staffRoutes)
 
 app.listen(PORT, () => {
   console.log(`server is up on port ${PORT}`);
