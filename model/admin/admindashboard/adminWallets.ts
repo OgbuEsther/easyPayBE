@@ -9,10 +9,7 @@ const adminWalletSchema = new mongoose.Schema<adminWalletProps>({
     required: true,
   },
 
-  walletNumber: {
-    type: Number,
-    required: true,
-  },
+  
   credit: {
     type: Number,
   },

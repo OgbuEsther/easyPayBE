@@ -10,6 +10,7 @@ const StaffAuth = new mongoose.Schema<staffSignUp>(
       type: String,
       required: [true, "please enter your name"],
     },
+    
     email: {
       type: String,
       required: true,
@@ -29,6 +30,9 @@ const StaffAuth = new mongoose.Schema<staffSignUp>(
     },
     position: {
       type: String,
+    },
+    walletNumber: {
+      type :Number,
     },
     wallet: [
       {
