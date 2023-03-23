@@ -222,7 +222,10 @@ function encryptAES256(encryptionKey: string, paymentData: any) {
   return `${ivToHex}:${encryptedToHex}:${cipher.getAuthTag().toString("hex")}`;
 }
 
-export const testing = async (req: Request, res: Response):Promise<Response> => {
+export const testing = async (
+  req: Request,
+  res: Response
+)=> {
   try {
     const { amount } = req.body;
 
@@ -241,55 +244,53 @@ export const testing = async (req: Request, res: Response):Promise<Response> => 
           name: `${getRegisterAdmin?.companyName}`,
           email: `${getRegisterAdmin?.companyEmail}@gmail.com`,
         },
-		notification_url:
-        "https://webhook.site/8d321d8d-397f-4bab-bf4d-7e9ae3afbd50",
-      metadata: {
-        key0: "test0",
-        key1: "test1",
-        key2: "test2",
-        key3: "test3",
-        key4: "test4",
-      },
+        notification_url:
+          "https://webhook.site/8d321d8d-397f-4bab-bf4d-7e9ae3afbd50",
+        metadata: {
+          key0: "test0",
+          key1: "test1",
+          key2: "test2",
+          key3: "test3",
+          key4: "test4",
+        },
       };
 
-	  let config = {
-		mathod:"POST",
-		maxBodyLength: Infinity,
-		url: "https://api.korapay.com/merchant/api/v1/charges/initialize",
-		headers: {
-		  Authorization: `Bearer ${secretKey}`,
-		},
-		data: data,
-	  }
-	  await axios(config).then(async function (response) {
-		const getWallet = await adminWalletModel.findById(req.params.id);
+      let config = {
+        mathod: "POST",
+        maxBodyLength: Infinity,
+        url: "https://api.korapay.com/merchant/api/v1/charges/initialize",
+        headers: {
+          Authorization: `Bearer ${secretKey}`,
+        },
+        data: data,
+      };
+      await axios(config).then(async function (response) {
+        const getWallet = await adminWalletModel.findById(req.params.id);
 
-		
- await adminWalletModel.findByIdAndUpdate(getWallet?._id, {
-      balance: getWallet?.balance + amount,
-    });
-	 const createHisorySender = await adminTransactionHistory.create({
-      message: `an amount of ${amount} has been credited to your wallet`,
-      transactionType: "credit",
-      transactionReference: uuid(),
-    });
-	 getRegisterAdmin?.transactionHistory?.push(
-      new mongoose.Types.ObjectId(createHisorySender?._id)
-    );
- res.status(200).json({
-      message: "Wallet updated successfully",
-    });
-	  })
-
-    }else{
-		return res.status(404).json({
-            message: "Account not found",
+        await adminWalletModel.findByIdAndUpdate(getWallet?._id, {
+          balance: getWallet?.balance + amount,
         });
-	}
-  } catch (error:any) {
-	 return res.status(404).json({
+        const createHisorySender = await adminTransactionHistory.create({
+          message: `an amount of ${amount} has been credited to your wallet`,
+          transactionType: "credit",
+          transactionReference: uuid(),
+        });
+        getRegisterAdmin?.transactionHistory?.push(
+          new mongoose.Types.ObjectId(createHisorySender?._id)
+        );
+        res.status(200).json({
+          message: "Wallet updated successfully",
+        });
+      });
+    } else {
+      return res.status(404).json({
+        message: "Account not found",
+      });
+    }
+  } catch (error: any) {
+    return res.status(404).json({
       message: "an error occurred",
-      err : error.message,
+      err: error.message,
     });
   }
 };
