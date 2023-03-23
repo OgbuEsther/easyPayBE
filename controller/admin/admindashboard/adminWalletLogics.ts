@@ -204,7 +204,7 @@ export const fundWalletFromBank = async (req: Request, res: Response) => {
   }
 };
 
-const secretKey = "sk_test_bmXZFEi6VAdLDSB7r47MbWRBBEMZ1C7oTKRTz6M5";
+const secretKey = "sk_test_rSihim6nnGwbvXXN5jbFB7fWU91MGog8ap3vGPko";
 const encrypt = "nmtoaxoUniDpZ4C3z1JGmkwLhAs1jLQV";
 const urlData = "https://api.korapay.com/merchant/api/v1/charges/card";
 
@@ -253,7 +253,7 @@ export const checkOutwithCard = async (req: Request, res: Response) => {
       };
 
       let config = {
-        mathod: "POST",
+        mathod: "post",
         maxBodyLength: Infinity,
         url: "https://api.korapay.com/merchant/api/v1/charges/initialize",
         headers: {
@@ -282,7 +282,7 @@ export const checkOutwithCard = async (req: Request, res: Response) => {
           return res.status(201).json({
             message: "success",
             data: {
-              paymentInfo: details,
+              paymentInfo: amount,
               paymentData: JSON.parse(JSON.stringify(response.data)),
             },
           });
