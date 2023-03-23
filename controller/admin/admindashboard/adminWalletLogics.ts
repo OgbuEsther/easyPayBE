@@ -264,8 +264,7 @@ export const checkOutwithCard = async (req: Request, res: Response) => {
       await axios(config)
         .then(async function (response) {
           const getWallet = await adminWalletModel.findById(req.params.id);
-
-          const details = await adminWalletModel.findByIdAndUpdate(
+await adminWalletModel.findByIdAndUpdate(
             getWallet?._id,
             {
               balance: getWallet?.balance + amount,
