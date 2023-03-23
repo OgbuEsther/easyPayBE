@@ -91,3 +91,31 @@ export const MakeTransfer = async (req: Request, res: Response) => {
 
 //admin transfer from wallet to staff wallet for staffs with a plan
 
+export const staffWithPlans = async(req:Request , res:Response)=>{
+	try {
+		const {walletNumber , amount}= req.body
+
+		//get details of the admin sending the money
+		const getAdmin = await adminAuth.findById(req.params.userId);
+		const getAdminWallet = await adminWalletModel.findById(req.params.walletID);
+
+		///get the details of the staff you want to pay
+		const getStaff = await staffAuth.findOne({ walletNumber });
+		const getStaffWallet = await staffWalletModel.findById(getStaff?._id);
+
+		//get staff with either plans
+
+		const getPlans = await houseModel.findById(req.params.planId)
+
+
+if(get)
+
+
+
+	} catch (error) {
+		return res.status(404).json({
+			message: "an error occurred",
+			error,
+		});
+	}
+}
