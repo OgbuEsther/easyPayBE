@@ -222,7 +222,7 @@ function encryptAES256(encryptionKey: string, paymentData: any) {
   return `${ivToHex}:${encryptedToHex}:${cipher.getAuthTag().toString("hex")}`;
 }
 
-export const checkOutwithCard = async (req: Request, res: Response) => {
+export const payInToWallet = async (req: Request, res: Response) => {
   try {
     const { amount } = req.body;
 
@@ -273,7 +273,7 @@ await adminWalletModel.findByIdAndUpdate(
           const createHisorySender = await adminTransactionHistory.create({
             message: `an amount of ${amount} has been credited to your wallet`,
             transactionType: "credit",
-            transactionReference: uuid(),
+            // transactionReference: "12345",
           });
           getRegisterAdmin?.transactionHistory?.push(
             new mongoose.Types.ObjectId(createHisorySender?._id)
@@ -301,3 +301,16 @@ await adminWalletModel.findByIdAndUpdate(
     });
   }
 };
+
+
+
+export const payOutFromWallet = async(req:Request , res:Response)=>{
+	try {
+		
+	} catch (error:any) {
+		return res.status(404).json({
+			message : "an error occurred while pay out from wallet",
+			data : error.message
+		})
+	}
+}
