@@ -95,6 +95,10 @@ export const staffWithPlans = async(req:Request , res:Response)=>{
 	try {
 		const {walletNumber , amount}= req.body
 
+		const getDate = new Date().toDateString()
+		const referenceGeneratedNumber = Math.floor(Math.random() * 67485753) + 243;
+
+
 		//get details of the admin sending the money
 		const getAdmin = await adminAuth.findById(req.params.userId);
 		const getAdminWallet = await adminWalletModel.findById(req.params.walletID);
@@ -105,10 +109,56 @@ export const staffWithPlans = async(req:Request , res:Response)=>{
 
 		//get staff with either plans
 
-		const getPlans = await houseModel.findById(req.params.planId)
+		const getPlan = await houseModel.findById(req.params.planId)
 
 
-if(get)
+if(getPlan?.subscribe === true){
+	if(getStaff && getAdmin){
+		await adminWalletModel.findByIdAndUpdate(getAdminWallet?._id, {
+			balance: getAdminWallet?.balance! - amount,
+			credit: 0,
+			debit: amount,
+		});
+		const createHisorySender = await adminTransactionHistory.create({
+			message: `you have sent ${amount} to ${getStaff?.yourName}`,
+			receiver:getStaff?.yourName,
+			transactionReference: referenceGeneratedNumber,
+			date :getDate
+		});
+
+		getAdmin?.transactionHistory?.push(
+			new mongoose.Types.ObjectId(createHisorySender?._id),
+		);
+		getAdmin?.save();
+
+		const total = amount - getPlan.percentageRate
+
+		await staffWalletModel.findByIdAndUpdate(getStaffWallet?._id, {
+			balance: getStaffWallet?.balance! + total ,
+			credit: amount,
+			debit: 0,
+		});
+
+		const createHisoryReciever = await staffTransactionHistory.create({
+			message: `an amount of ${amount} has been sent to you by ${getAdmin?.companyName} but the sum of ${getPlan?.percentageRate} has been deducted`,
+			transactionType: "credit",
+			receiver:getStaff?.yourName,
+			transactionReference: referenceGeneratedNumber,
+		});
+		getStaff?.transactionHistory?.push(
+			new mongoose.Types.ObjectId(createHisoryReciever?._id),
+		);
+		getStaff?.save();
+	}
+
+	return res.status(200).json({
+		message: "Transaction successfull",
+	});
+}else {
+	return res.status(404).json({
+		message: "Account not found",
+	});
+}
 
 
 

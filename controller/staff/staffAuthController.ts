@@ -19,6 +19,7 @@ export const staffSignup = async (req: Request, res: Response) => {
 
      const generateNumber = Math.floor(Math.random() * 78) + dater;
 
+     
 
     const staff = await staffAuth.create({
       companyName,
