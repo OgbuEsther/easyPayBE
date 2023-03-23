@@ -222,10 +222,7 @@ function encryptAES256(encryptionKey: string, paymentData: any) {
   return `${ivToHex}:${encryptedToHex}:${cipher.getAuthTag().toString("hex")}`;
 }
 
-export const checkOutwithCard = async (
-  req: Request,
-  res: Response
-)=> {
+export const checkOutwithCard = async (req: Request, res: Response) => {
   try {
     const { amount } = req.body;
 
@@ -264,24 +261,35 @@ export const checkOutwithCard = async (
         },
         data: data,
       };
-      await axios(config).then(async function (response) {
-        const getWallet = await adminWalletModel.findById(req.params.id);
+      await axios(config)
+        .then(async function (response) {
+          const getWallet = await adminWalletModel.findById(req.params.id);
 
-        await adminWalletModel.findByIdAndUpdate(getWallet?._id, {
-          balance: getWallet?.balance + amount,
+          const details = await adminWalletModel.findByIdAndUpdate(
+            getWallet?._id,
+            {
+              balance: getWallet?.balance + amount,
+            }
+          );
+          const createHisorySender = await adminTransactionHistory.create({
+            message: `an amount of ${amount} has been credited to your wallet`,
+            transactionType: "credit",
+            transactionReference: uuid(),
+          });
+          getRegisterAdmin?.transactionHistory?.push(
+            new mongoose.Types.ObjectId(createHisorySender?._id)
+          );
+          return res.status(201).json({
+            message: "success",
+            data: {
+              paymentInfo: details,
+              paymentData: JSON.parse(JSON.stringify(response.data)),
+            },
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
         });
-        const createHisorySender = await adminTransactionHistory.create({
-          message: `an amount of ${amount} has been credited to your wallet`,
-          transactionType: "credit",
-          transactionReference: uuid(),
-        });
-        getRegisterAdmin?.transactionHistory?.push(
-          new mongoose.Types.ObjectId(createHisorySender?._id)
-        );
-        res.status(200).json({
-          message: "Wallet updated successfully",
-        });
-      });
     } else {
       return res.status(404).json({
         message: "Account not found",
