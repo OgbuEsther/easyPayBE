@@ -222,7 +222,7 @@ function encryptAES256(encryptionKey: string, paymentData: any) {
   return `${ivToHex}:${encryptedToHex}:${cipher.getAuthTag().toString("hex")}`;
 }
 
-export const testing = async (
+export const checkOutwithCard = async (
   req: Request,
   res: Response
 )=> {
