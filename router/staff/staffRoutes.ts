@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { HousePlan } from "../../controller/staff/staffDashboard/createPlans";
+import { HousePlan,FeesPlan,investPlan } from "../../controller/staff/staffDashboard/createPlans";
 
 
 const staffRoutes = Router()
 
 staffRoutes.post("/houseplan/:staffId" , HousePlan)
-staffRoutes.post("/investplan/:staffId" , HousePlan)
-staffRoutes.post("/schoolplan/:staffId" , HousePlan)
+staffRoutes.post("/investplan/:staffId" , investPlan)
+staffRoutes.post("/schoolplan/:staffId" , FeesPlan)
 
 export default staffRoutes
