@@ -8,6 +8,7 @@ export interface staffWalletProps {
 export interface plans {
   percentageRate : number;
   totalBal : number
+  subscribe :boolean
 }
 
 export interface staffTransactionProps {

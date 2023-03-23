@@ -3,6 +3,10 @@ import staffWalletModel from "../../model/staff/staffDashboard/StaffWallet";
 import mongoose from "mongoose";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
+import feesModel from "../../model/staff/staffDashboard/staffFees";
+import houseModel from "../../model/staff/staffDashboard/StaffHouse";
+import investModel from "../../model/staff/staffDashboard/staffInvestment";
+
 
 export const staffSignup = async (req: Request, res: Response) => {
   try {
@@ -15,6 +19,7 @@ export const staffSignup = async (req: Request, res: Response) => {
 
      const generateNumber = Math.floor(Math.random() * 78) + dater;
 
+     
 
     const staff = await staffAuth.create({
       companyName,
@@ -24,6 +29,18 @@ export const staffSignup = async (req: Request, res: Response) => {
       position,
       walletNumber: generateNumber,
     });
+
+    const house = await houseModel.create ({
+
+    })
+
+    const fees = await feesModel.create({
+
+    })
+
+const invest = await investModel.create({
+  
+})
 
      const createWallet = await staffWalletModel.create({
        _id: staff?._id,

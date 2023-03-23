@@ -10,7 +10,7 @@ const StaffAuth = new mongoose.Schema<staffSignUp>(
       type: String,
       required: [true, "please enter your name"],
     },
-    
+  
     email: {
       type: String,
       required: true,

@@ -10,8 +10,12 @@ percentageRate :{
 },
 totalBal : {
     type : Number,
-}
-})
+},
+subscribe : {
+    type : Boolean,
+    default : false
+  },
+} , {timestamps:true})
 
 const houseModel = mongoose.model<housePlan>("staffHousePlan", houseSchema)
 

@@ -22,6 +22,7 @@ const AdminAuth = new mongoose.Schema<adminSignUp>(
       type: String,
       required: [true, "please enter your name"],
     },
+    
     password: {
       type: String,
       required: [true, "please enter a password"],

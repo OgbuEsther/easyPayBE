@@ -15,6 +15,7 @@ export interface staffSignUp {
   companyName: string;
   position: string;
   walletNumber: number;
+  subscribe :boolean,
   wallet: {}[];
   transactionHistory: {}[];
   savingsPlan: {}[];

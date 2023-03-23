@@ -10,7 +10,10 @@ percentageRate :{
 },
 totalBal : {
     type : Number,
-}
+},
+subscribe : {
+    type : Boolean,
+  },
 })
 
 const feesModel = mongoose.model<feesPlan>("staffSchoolFeesPlan", feesSchema)
