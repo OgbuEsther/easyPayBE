@@ -6,6 +6,10 @@ interface SAuth extends staffSignUp, mongoose.Document {}
 
 const StaffAuth = new mongoose.Schema<staffSignUp>(
   {
+    companyCode : {
+      type : String,
+   
+    },
     yourName: {
       type: String,
       required: [true, "please enter your name"],
@@ -23,10 +27,8 @@ const StaffAuth = new mongoose.Schema<staffSignUp>(
       required: true,
       min: 6,
     },
-    companyName: {
+    companyname: {
       type: String,
-      unique: true,
-      required: true,
     },
     position: {
       type: String,

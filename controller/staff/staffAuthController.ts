@@ -7,11 +7,11 @@ import feesModel from "../../model/staff/staffDashboard/staffFees";
 import houseModel from "../../model/staff/staffDashboard/StaffHouse";
 import investModel from "../../model/staff/staffDashboard/staffInvestment";
 import adminAuth from "../../model/admin/adminAuth";
-
+import otpgenerator from "otp-generator"
 
 export const staffSignup = async (req: Request, res: Response) => {
   try {
-    const { companyName, email, yourName, password, position ,walletNumber } = req.body;
+    const { companyname, email, yourName, password, position ,walletNumber } = req.body;
 
     const getAdmin = await adminAuth.findById(req.params.id);
 
@@ -22,10 +22,16 @@ export const staffSignup = async (req: Request, res: Response) => {
 
      const generateNumber = Math.floor(Math.random() * 78) + dater;
 
-     
+     const genCode = otpgenerator.generate(6, {
+      upperCaseAlphabets: false,
+      specialChars: false,
+      digits: true,
+      lowerCaseAlphabets: false,
+    });
 
     const staff = await staffAuth.create({
-      companyName,
+      companyCode: getAdmin?.companyCode,
+      companyname:getAdmin?.companyname,
       email,
       yourName,
       password: hash,
@@ -33,10 +39,10 @@ export const staffSignup = async (req: Request, res: Response) => {
       walletNumber: generateNumber,
     });
 
-    if  (getAdmin?.companyName === staff?.companyName  ){
+    if  (getAdmin?.companyCode === staff?.companyCode){
 
-      await getAdmin.viewUser.push(new mongoose.Types.ObjectId(staff?._id))
-      await getAdmin.save();
+       getAdmin.viewUser.push(new mongoose.Types.ObjectId(staff?._id))
+       getAdmin.save();
 
       const createWallet = await staffWalletModel.create({
         _id: staff?._id,
@@ -75,6 +81,8 @@ const invest = await investModel.create({
 
  
   } catch (error: any) {
+    console.log("error", error);
+    
     return res.status(400).json({
       message: "an error occurred while creating staff",
       data: error.message,
@@ -84,7 +92,7 @@ const invest = await investModel.create({
 
 export const staffSignin = async (req: Request, res: Response) => {
   try {
-    const { companyName, email, password } = req.body;
+    const { companyname, email, password } = req.body;
 
     const staff = await staffAuth.findOne({ email });
 

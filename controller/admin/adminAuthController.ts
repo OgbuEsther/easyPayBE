@@ -3,29 +3,36 @@ import mongoose from "mongoose";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import adminWalletModel from "../../model/admin/admindashboard/adminWallets";
-
+import otpgenerator from "otp-generator";
 export const adminSignup = async (req: Request, res: Response) => {
   try {
-    const { companyName, companyEmail, yourName, password ,walletNumber  } = req.body;
+    const { companyname, companyEmail, yourName, password, walletNumber } =
+      req.body;
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
     const dater = Date.now();
 
     const generateNumber = Math.floor(Math.random() * 78) + dater;
-
+    const genCode = otpgenerator.generate(6, {
+      upperCaseAlphabets: false,
+      specialChars: false,
+      digits: true,
+      lowerCaseAlphabets: false,
+    });
     const admin = await adminAuth.create({
-      companyName,
+      companyCode: genCode,
+      companyname,
       companyEmail,
       yourName,
       password: hash,
-       walletNumber: generateNumber,
+      walletNumber: generateNumber,
     });
 
     const createWallet = await adminWalletModel.create({
       _id: admin?._id,
       balance: 15000,
-     
+
       credit: 0,
       debit: 0,
     });
@@ -84,7 +91,15 @@ export const getAllAdmin = async (req: Request, res: Response) => {
 
 export const getOneAdmin = async (req: Request, res: Response) => {
   try {
-    const admin = await adminAuth.findById(req.params.adminId);
+    const admin = await adminAuth.findById(req.params.adminId).populate([
+      {
+        path: "wallet",
+        select: "balance credit debit",
+      },
+      {
+        path: "viewUser",
+      },
+    ]);
 
     return res.status(200).json({
       message: "get one admin",

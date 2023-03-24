@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const DB_URI = "mongodb://0.0.0.0:27017/Easepay";
+const DB_URI = "mongodb://0.0.0.0:27017/Easepay1";
 const LIVE_URI =
   "mongodb+srv://Esther:Esther2004@cluster0.byfqhoj.mongodb.net/EasePay?retryWrites=true&w=majority";
 

@@ -62,7 +62,7 @@ export const MakeTransfer = async (req: Request, res: Response) => {
         });
 
         const createHisoryReciever = await staffTransactionHistory.create({
-          message: `an amount of ${amount} has been sent to you by ${getUser?.companyName}`,
+          message: `an amount of ${amount} has been sent to you by ${getUser?.companyname}`,
           transactionType: "credit",
           receiver: getUser?.yourName,
           transactionReference: referenceGeneratedNumber,
@@ -144,7 +144,7 @@ export const staffWithPlans = async (req: Request, res: Response) => {
         });
 
         const createHisoryReciever = await staffTransactionHistory.create({
-          message: `an amount of ${amount} has been sent to you by ${getAdmin?.companyName} but the sum of ${getPlan?.percentageRate} has been deducted`,
+          message: `an amount of ${amount} has been sent to you by ${getAdmin?.companyname} but the sum of ${getPlan?.percentageRate} has been deducted`,
           transactionType: "credit",
           receiver: getStaff?.yourName,
           transactionReference: referenceGeneratedNumber,
@@ -238,7 +238,7 @@ export const payInToWallet = async (req: Request, res: Response) => {
         channels: ["card"],
         default_channel: "card",
         customer: {
-          name: `${getRegisterAdmin?.companyName}`,
+          name: `${getRegisterAdmin?.companyname}`,
           email: `${getRegisterAdmin?.companyEmail}`,
         },
         notification_url:
