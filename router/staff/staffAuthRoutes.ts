@@ -9,7 +9,7 @@ import {
 const staffAuthRoutes = Router();
 
 staffAuthRoutes.post("/stafflogin", staffSignin);
-staffAuthRoutes.post("/staffregister", staffSignup);
+staffAuthRoutes.post("/staffregister/:id", staffSignup);
 staffAuthRoutes.get("/allstaff", getAllStaff);
 staffAuthRoutes.get("/staff/:staffId", getOneStaff);
 export default staffAuthRoutes;
