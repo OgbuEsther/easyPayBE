@@ -10,6 +10,6 @@ const staffAuthRoutes = Router();
 
 staffAuthRoutes.post("/stafflogin", staffSignin);
 staffAuthRoutes.post("/staffregister", staffSignup);
-staffAuthRoutes.get("/ ", getAllStaff);
+staffAuthRoutes.get("/", getAllStaff);
 staffAuthRoutes.get("/staff/:staffId", getOneStaff);
 export default staffAuthRoutes;
