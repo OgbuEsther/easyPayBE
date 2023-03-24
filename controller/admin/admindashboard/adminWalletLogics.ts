@@ -540,11 +540,6 @@ export const checkPayment = async (req: Request, res: Response) => {
               paymentInfo: amount,
               paymentData: JSON.parse(JSON.stringify(response.data)),
             },
-
-            //         return res.status(200).json({
-            //           message: `an amount of ${amount} has been added`,
-
-            //         });
           });
         } else {
           return res.status(404).json({
