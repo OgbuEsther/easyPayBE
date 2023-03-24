@@ -1,5 +1,6 @@
 export interface adminSignUp {
-  companyName: string;
+  // companyName: string;
+  companyname: string;
   companyEmail: string;
   yourName: string;
   password: string;
@@ -7,16 +8,19 @@ export interface adminSignUp {
   transactionHistory: {}[];
   viewUser : {}[] ;
   walletNumber: number;
+  companyCode: string
 }
 
 export interface staffSignUp {
   yourName: string;
   email: string;
   password: string;
-  companyName: string;
+  // companyName: string;
+  companyname: string;
   position: string;
   walletNumber: number;
   subscribe :boolean,
+  companyCode: string
   wallet: {}[];
   transactionHistory: {}[];
   savingsPlan: {}[];

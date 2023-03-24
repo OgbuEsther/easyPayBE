@@ -5,10 +5,13 @@ interface iAuth extends adminSignUp, mongoose.Document {}
 
 const AdminAuth = new mongoose.Schema<adminSignUp>(
   {
-    companyName: {
+    companyCode : {
+      type : String,
+    
+    },
+    companyname: {
       type: String,
-      unique: true,
-      required: [true, "please enter your company name"],
+
     },
     
     companyEmail: {
