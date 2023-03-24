@@ -17,15 +17,23 @@ const adminAuth_1 = __importDefault(require("../../model/admin/adminAuth"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const adminWallets_1 = __importDefault(require("../../model/admin/admindashboard/adminWallets"));
+const otp_generator_1 = __importDefault(require("otp-generator"));
 const adminSignup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { companyName, companyEmail, yourName, password, walletNumber } = req.body;
+        const { companyname, companyEmail, yourName, password, walletNumber } = req.body;
         const salt = yield bcrypt_1.default.genSalt(10);
         const hash = yield bcrypt_1.default.hash(password, salt);
         const dater = Date.now();
         const generateNumber = Math.floor(Math.random() * 78) + dater;
+        const genCode = otp_generator_1.default.generate(6, {
+            upperCaseAlphabets: false,
+            specialChars: false,
+            digits: true,
+            lowerCaseAlphabets: false,
+        });
         const admin = yield adminAuth_1.default.create({
-            companyName,
+            companyCode: genCode,
+            companyname,
             companyEmail,
             yourName,
             password: hash,
@@ -89,7 +97,15 @@ const getAllAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getAllAdmin = getAllAdmin;
 const getOneAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const admin = yield adminAuth_1.default.findById(req.params.adminId);
+        const admin = yield adminAuth_1.default.findById(req.params.adminId).populate([
+            {
+                path: "wallet",
+                select: "balance credit debit",
+            },
+            {
+                path: "viewUser",
+            },
+        ]);
         return res.status(200).json({
             message: "get one admin",
             data: admin,

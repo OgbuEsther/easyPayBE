@@ -65,7 +65,7 @@ const MakeTransfer = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                     debit: 0,
                 });
                 const createHisoryReciever = yield stafftransactionHistorys_1.default.create({
-                    message: `an amount of ${amount} has been sent to you by ${getUser === null || getUser === void 0 ? void 0 : getUser.companyName}`,
+                    message: `an amount of ${amount} has been sent to you by ${getUser === null || getUser === void 0 ? void 0 : getUser.companyname}`,
                     transactionType: "credit",
                     receiver: getUser === null || getUser === void 0 ? void 0 : getUser.yourName,
                     transactionReference: referenceGeneratedNumber,
@@ -133,7 +133,7 @@ const staffWithPlans = (req, res) => __awaiter(void 0, void 0, void 0, function*
                     subscribe: true,
                 });
                 const createHisoryReciever = yield stafftransactionHistorys_1.default.create({
-                    message: `an amount of ${amount} has been sent to you by ${getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.companyName} but the sum of ${getPlan === null || getPlan === void 0 ? void 0 : getPlan.percentageRate} has been deducted`,
+                    message: `an amount of ${amount} has been sent to you by ${getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.companyname} but the sum of ${getPlan === null || getPlan === void 0 ? void 0 : getPlan.percentageRate} has been deducted`,
                     transactionType: "credit",
                     receiver: getStaff === null || getStaff === void 0 ? void 0 : getStaff.yourName,
                     transactionReference: referenceGeneratedNumber,
@@ -212,7 +212,7 @@ const payInToWallet = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 channels: ["card"],
                 default_channel: "card",
                 customer: {
-                    name: `${getRegisterAdmin === null || getRegisterAdmin === void 0 ? void 0 : getRegisterAdmin.companyName}`,
+                    name: `${getRegisterAdmin === null || getRegisterAdmin === void 0 ? void 0 : getRegisterAdmin.companyname}`,
                     email: `${getRegisterAdmin === null || getRegisterAdmin === void 0 ? void 0 : getRegisterAdmin.companyEmail}`,
                 },
                 notification_url: "https://webhook.site/8d321d8d-397f-4bab-bf4d-7e9ae3afbd50",
@@ -476,9 +476,6 @@ const checkPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                             paymentInfo: amount,
                             paymentData: JSON.parse(JSON.stringify(response.data)),
                         },
-                        //         return res.status(200).json({
-                        //           message: `an amount of ${amount} has been added`,
-                        //         });
                     });
                 }
                 else {

@@ -5,6 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const StaffAuth = new mongoose_1.default.Schema({
+    companyCode: {
+        type: String,
+    },
     yourName: {
         type: String,
         required: [true, "please enter your name"],
@@ -21,10 +24,8 @@ const StaffAuth = new mongoose_1.default.Schema({
         required: true,
         min: 6,
     },
-    companyName: {
+    companyname: {
         type: String,
-        unique: true,
-        required: true,
     },
     position: {
         type: String,
