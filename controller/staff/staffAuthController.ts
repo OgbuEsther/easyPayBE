@@ -6,11 +6,14 @@ import bcrypt from "bcrypt";
 import feesModel from "../../model/staff/staffDashboard/staffFees";
 import houseModel from "../../model/staff/staffDashboard/StaffHouse";
 import investModel from "../../model/staff/staffDashboard/staffInvestment";
+import adminAuth from "../../model/admin/adminAuth";
 
 
 export const staffSignup = async (req: Request, res: Response) => {
   try {
     const { companyName, email, yourName, password, position ,walletNumber } = req.body;
+
+    const getAdmin = await adminAuth.findById(req.params.id);
 
      const salt = await bcrypt.genSalt(10);
      const hash = await bcrypt.hash(password, salt);
@@ -30,6 +33,34 @@ export const staffSignup = async (req: Request, res: Response) => {
       walletNumber: generateNumber,
     });
 
+    if  (getAdmin?.companyName === staff?.companyName  ){
+
+      await getAdmin.viewUser.push(new mongoose.Types.ObjectId(staff?._id))
+      await getAdmin.save();
+
+      const createWallet = await staffWalletModel.create({
+        _id: staff?._id,
+        balance: 15000,
+        credit: 0,
+        debit: 0,
+      });
+ 
+      staff?.wallet.push(new mongoose.Types.ObjectId(createWallet?._id));
+ 
+      staff.save();
+    
+      return res.status(200).json({
+        status: 200,
+        message: "Staff created successfully",
+        data: staff,
+      });
+    }else{
+      return res.status(400).json({
+        message : "unable to create staff under this company name"
+
+      })
+    }
+
     const house = await houseModel.create ({
 
     })
@@ -42,21 +73,7 @@ const invest = await investModel.create({
   
 })
 
-     const createWallet = await staffWalletModel.create({
-       _id: staff?._id,
-       balance: 15000,
-  
-       credit: 0,
-       debit: 0,
-     });
-
-     staff?.wallet.push(new mongoose.Types.ObjectId(createWallet?._id));
-
-     staff.save();
-    return res.status(200).json({
-      message: "Success",
-      data: staff,
-    });
+ 
   } catch (error: any) {
     return res.status(400).json({
       message: "an error occurred while creating staff",

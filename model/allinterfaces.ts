@@ -5,6 +5,7 @@ export interface adminSignUp {
   password: string;
   wallet: {}[];
   transactionHistory: {}[];
+  viewUser : {}[] ;
   walletNumber: number;
 }
 

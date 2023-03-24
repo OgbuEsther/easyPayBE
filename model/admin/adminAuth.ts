@@ -40,6 +40,12 @@ const AdminAuth = new mongoose.Schema<adminSignUp>(
         ref: "adminTransactionHistory",
       },
     ],
+  viewUser :[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "staffAuth",
+    }
+  ]
   },
   { timestamps: true }
 );
