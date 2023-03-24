@@ -5,10 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const AdminAuth = new mongoose_1.default.Schema({
-    companyName: {
+    companyCode: {
         type: String,
-        unique: true,
-        required: [true, "please enter your company name"],
+    },
+    companyname: {
+        type: String,
     },
     companyEmail: {
         type: String,
@@ -38,6 +39,12 @@ const AdminAuth = new mongoose_1.default.Schema({
             ref: "adminTransactionHistory",
         },
     ],
+    viewUser: [
+        {
+            type: mongoose_1.default.Schema.Types.ObjectId,
+            ref: "staffAuth",
+        }
+    ]
 }, { timestamps: true });
 const adminAuth = mongoose_1.default.model("adminAuthModel", AdminAuth);
 exports.default = adminAuth;
