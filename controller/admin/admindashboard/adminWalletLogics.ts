@@ -208,19 +208,19 @@ const secretKey = "sk_test_rSihim6nnGwbvXXN5jbFB7fWU91MGog8ap3vGPko";
 const encrypt = "nmtoaxoUniDpZ4C3z1JGmkwLhAs1jLQV";
 const urlData = "https://api.korapay.com/merchant/api/v1/charges/card";
 
-function encryptAES256(encryptionKey: string, paymentData: any) {
-  const iv = crypto.randomBytes(16);
+// function encryptAES256(encryptionKey: string, paymentData: any) {
+//   const iv = crypto.randomBytes(16);
 
-  const cipher = crypto.createCipheriv("aes-256-gcm", encryptionKey, iv);
-  const encrypted = cipher.update(paymentData);
+//   const cipher = crypto.createCipheriv("aes-256-gcm", encryptionKey, iv);
+//   const encrypted = cipher.update(paymentData);
 
-  const ivToHex = iv.toString("hex");
-  const encryptedToHex = Buffer.concat([encrypted, cipher.final()]).toString(
-    "hex"
-  );
+//   const ivToHex = iv.toString("hex");
+//   const encryptedToHex = Buffer.concat([encrypted, cipher.final()]).toString(
+//     "hex"
+//   );
 
-  return `${ivToHex}:${encryptedToHex}:${cipher.getAuthTag().toString("hex")}`;
-}
+//   return `${ivToHex}:${encryptedToHex}:${cipher.getAuthTag().toString("hex")}`;
+// }
 
 export const payInToWallet = async (req: Request, res: Response) => {
   try {
@@ -239,7 +239,7 @@ export const payInToWallet = async (req: Request, res: Response) => {
         default_channel: "card",
         customer: {
           name: `${getRegisterAdmin?.companyName}`,
-          email: `${getRegisterAdmin?.companyEmail}@gmail.com`,
+          email: `${getRegisterAdmin?.companyEmail}`,
         },
         notification_url:
           "https://webhook.site/8d321d8d-397f-4bab-bf4d-7e9ae3afbd50",
@@ -252,23 +252,27 @@ export const payInToWallet = async (req: Request, res: Response) => {
         },
       };
 
-      let config = {
+      var config = {
         mathod: "post",
         maxBodyLength: Infinity,
         url: "https://api.korapay.com/merchant/api/v1/charges/initialize",
         headers: {
+          // "Content-Type": "application/json",
           Authorization: `Bearer ${secretKey}`,
         },
         data: data,
       };
       await axios(config)
         .then(async function (response) {
-          const getWallet = await adminWalletModel.findById(req.params.id);
-await adminWalletModel.findByIdAndUpdate(
+          const getWallet = await adminWalletModel.findById(
+            getRegisterAdmin?._id
+          );
+          await adminWalletModel.findByIdAndUpdate(
             getWallet?._id,
             {
-              balance: getWallet?.balance + amount,
-            }
+              balance: getWallet?.balance! + amount,
+            },
+            { new: true }
           );
           const createHisorySender = await adminTransactionHistory.create({
             message: `an amount of ${amount} has been credited to your wallet`,
@@ -278,8 +282,8 @@ await adminWalletModel.findByIdAndUpdate(
           getRegisterAdmin?.transactionHistory?.push(
             new mongoose.Types.ObjectId(createHisorySender?._id)
           );
-          return res.status(201).json({
-            message: "success",
+          return res.status(200).json({
+            message: `an amount of ${amount} has been added`,
             data: {
               paymentInfo: amount,
               paymentData: JSON.parse(JSON.stringify(response.data)),
@@ -302,15 +306,74 @@ await adminWalletModel.findByIdAndUpdate(
   }
 };
 
+export const payInToWallet2 = async () => {};
 
+export const payOutFromWallet = async (req: Request, res: Response) => {
+  try {
+  } catch (error: any) {
+    return res.status(404).json({
+      message: "an error occurred while pay out from wallet",
+      data: error.message,
+    });
+  }
+};
 
-export const payOutFromWallet = async(req:Request , res:Response)=>{
-	try {
-		
-	} catch (error:any) {
-		return res.status(404).json({
-			message : "an error occurred while pay out from wallet",
-			data : error.message
-		})
-	}
-}
+export const checkOutToBank = async (req: Request, res: Response) => {
+  try {
+    const {
+      amount,
+      name,
+      number,
+      cvv,
+      pin,
+      expiry_year,
+      expiry_month,
+      title,
+      description,
+    } = req.body;
+
+    const getStaffInfo = await staffAuth.findById(req.params.id);
+
+    var data = JSON.stringify({
+      reference: uuid(),
+      destination: {
+        type: "bank_account",
+        amount: "9000",
+        currency: "NGN",
+        narration: "Test Transfer Payment",
+        bank_account: {
+          bank: "033",
+          account: "0000000000",
+        },
+        customer: {
+          name: `${getStaffInfo?.yourName}`,
+          email: `${getStaffInfo?.email}`,
+        },
+      },
+    });
+
+    var config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "https://api.korapay.com/merchant/api/v1/transactions/disburse",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${secretKey}`,
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(function (response) {
+        return res.status(201).json({
+          message: "success",
+          data: JSON.parse(JSON.stringify(response.data)),
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  } catch (error) {
+    console.log(error);
+  }
+};
