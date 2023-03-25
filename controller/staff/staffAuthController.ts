@@ -39,7 +39,7 @@ export const staffSignup = async (req: Request, res: Response) => {
       walletNumber: generateNumber,
     });
 
-    if  (getAdmin?.companyCode === staff?.companyCode){
+    if  (getAdmin?.companyname === staff?.companyname){
 
        getAdmin.viewUser.push(new mongoose.Types.ObjectId(staff?._id))
        getAdmin.save();
