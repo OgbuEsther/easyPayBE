@@ -13,7 +13,7 @@ export const staffSignup = async (req: Request, res: Response) => {
   try {
     const { companyname, email, yourName, password, position ,walletNumber } = req.body;
 
-    const getAdmin = await adminAuth.findById(req.params.id);
+    const getAdmin = await adminAuth.findOne({companyname});
 
      const salt = await bcrypt.genSalt(10);
      const hash = await bcrypt.hash(password, salt);
@@ -31,7 +31,7 @@ export const staffSignup = async (req: Request, res: Response) => {
 
     const staff = await staffAuth.create({
       companyCode: getAdmin?.companyCode,
-      companyname:getAdmin?.companyname,
+      companyname,
       email,
       yourName,
       password: hash,
