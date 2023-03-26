@@ -66,8 +66,8 @@ export const FeesPlan = async (req: Request, res: Response) => {
 export const travelPlan = async (req: Request, res: Response) => {
   try {
     const { percentageRate, totalBal, subscribe } = req.body;
-
-    if (subscribe === true) {
+    const getStaff = await staffAuth.findById(req.params.staffId);
+    if (subscribe === true ) {
       // const getStaff =
       const createTravelPlan = await travelModel.create({
         percentageRate,
@@ -75,10 +75,10 @@ export const travelPlan = async (req: Request, res: Response) => {
         subscribe,
       });
 
-      const getStaff = await staffAuth.findById(req.params.staffId);
+     
 
       await getStaff?.travelAndTour?.push(
-        new mongoose.Types.ObjectId(createInvestPlan?._id)
+        new mongoose.Types.ObjectId(createTravelPlan?._id)
       );
       getStaff?.save();
 
@@ -86,7 +86,7 @@ export const travelPlan = async (req: Request, res: Response) => {
         message: "created travel plan",
         data: createTravelPlan,
       });
-    } else {
+    }else {
       return res.status(404).json({
         message: "cant create plan because you are not subscribed",
       });
