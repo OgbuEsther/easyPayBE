@@ -4,6 +4,7 @@ import feesModel from "../../../model/staff/staffDashboard/staffFees";
 import investModel from "../../../model/staff/staffDashboard/staffInvestment";
 import mongoose from "mongoose";
 import { Request, Response } from "express";
+import travelModel from "../../../model/staff/staffDashboard/staffTravel";
 
 //create house plan
 
@@ -62,13 +63,13 @@ export const FeesPlan = async (req: Request, res: Response) => {
     });
   }
 };
-export const investPlan = async (req: Request, res: Response) => {
+export const travelPlan = async (req: Request, res: Response) => {
   try {
     const { percentageRate, totalBal, subscribe } = req.body;
 
     if (subscribe === true) {
       // const getStaff =
-      const createInvestPlan = await investModel.create({
+      const createTravelPlan = await travelModel.create({
         percentageRate,
         totalBal,
         subscribe,
@@ -76,14 +77,14 @@ export const investPlan = async (req: Request, res: Response) => {
 
       const getStaff = await staffAuth.findById(req.params.staffId);
 
-      await getStaff?.investmentPlan?.push(
+      await getStaff?.travelAndTour?.push(
         new mongoose.Types.ObjectId(createInvestPlan?._id)
       );
       getStaff?.save();
 
       return res.status(201).json({
-        message: "created invest plan",
-        data: createInvestPlan,
+        message: "created travel plan",
+        data: createTravelPlan,
       });
     } else {
       return res.status(404).json({

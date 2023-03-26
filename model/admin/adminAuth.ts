@@ -11,6 +11,7 @@ const AdminAuth = new mongoose.Schema<adminSignUp>(
     },
     companyname: {
       type: String,
+      unique:true
 
     },
     

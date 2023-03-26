@@ -96,6 +96,13 @@ export const staffSignin = async (req: Request, res: Response) => {
 
     const staff = await staffAuth.findOne({ email });
 
+    if(!companyname){
+      return res.status(400).json({
+        message: "company not found",
+       
+      });
+    }
+
     return res.status(200).json({
       message: "Success , staff is logged in",
       data: staff,
