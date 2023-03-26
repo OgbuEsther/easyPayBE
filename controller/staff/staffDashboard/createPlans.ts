@@ -15,8 +15,9 @@ export const HousePlan = async (req: Request, res: Response) => {
     // const getStaff =
     const createHousePlan = await houseModel.create({
       percentageRate,
-      totalBal: 0,
+      totalBal :0.00,
       subscribe,
+      _id:getStaff?._id
     });
     await getStaff?.houseRentPlan?.push(
       new mongoose.Types.ObjectId(createHousePlan?._id)
@@ -38,14 +39,15 @@ export const HousePlan = async (req: Request, res: Response) => {
 export const FeesPlan = async (req: Request, res: Response) => {
   try {
     const { percentageRate, totalBal, subscribe } = req.body;
-
-    // const getStaff =
+    const getStaff = await staffAuth.findById(req.params.staffId);
+  
     const createFeesPlan = await feesModel.create({
       percentageRate,
-      totalBal,
+      totalBal :0.00,
       subscribe,
+      _id:getStaff?._id
     });
-    const getStaff = await staffAuth.findById(req.params.staffId);
+    
 
     await getStaff?.schoolFeesPlan?.push(
       new mongoose.Types.ObjectId(createFeesPlan?._id)
@@ -71,8 +73,9 @@ export const travelPlan = async (req: Request, res: Response) => {
       // const getStaff =
       const createTravelPlan = await travelModel.create({
         percentageRate,
-        totalBal,
+        totalBal :0.00,
         subscribe,
+        _id:getStaff?._id
       });
 
      

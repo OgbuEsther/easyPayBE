@@ -28,7 +28,7 @@ export const MakeTransfer = async (req: Request, res: Response) => {
 
     // SENDER ACCOUNT
     const getUser = await adminAuth.findById(req.params.UserId);
-    const getUserWallet = await adminWalletModel.findById(req.params.WalletID);
+    const getUserWallet = await adminWalletModel.findById(getUser?._id);
 
     if (getUser && getReciever) {
       if (amount > getUserWallet?.balance!) {
@@ -101,7 +101,7 @@ export const staffWithPlans = async (req: Request, res: Response) => {
     const referenceGeneratedNumber = Math.floor(Math.random() * 67485753) + 243;
 
     //get details of the admin sending the money
-    const getAdmin = await adminAuth.findById(req.params.userId);
+    const getAdmin = await adminAuth.findById(req.params.adminId);
     const getAdminWallet = await adminWalletModel.findById(getAdmin?._id);
 
     ///get the details of the staff you want to pay
@@ -110,11 +110,15 @@ export const staffWithPlans = async (req: Request, res: Response) => {
 
     //get staff with either plans
 
-    const getHousePlan = await houseModel.findById(req.params.planId);
-    const getTravelPlan = await travelModel.findById(req.params.travelId)
-    const getSchool = await feesModel.findById(req.params.feesId)
+    const getHousePlan = await houseModel.findById(getStaff?._id);
+    const getTravelPlan = await travelModel.findById(getStaff?._id)
+    const getSchool = await feesModel.findById(getStaff?._id)
 
-    if (getHousePlan?.subscribe === true) {
+    if (amount > getAdminWallet?.balance!) {
+      return res.status(404).json({
+        message: "insufficent fund.",
+      });
+    }else if (getHousePlan?.subscribe === true) {
       if (getStaff && getAdmin) {
         await adminWalletModel.findByIdAndUpdate(getAdminWallet?._id, {
           balance: getAdminWallet?.balance! - amount,
@@ -256,9 +260,7 @@ export const staffWithPlans = async (req: Request, res: Response) => {
       return res.status(200).json({
         message: "Transaction successfull",
       });
-    }
-    
-    else {
+    }else {
       return res.status(404).json({
         message: "Account not found or insufficient money",
       });
