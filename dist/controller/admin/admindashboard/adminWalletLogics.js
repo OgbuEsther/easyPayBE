@@ -24,6 +24,8 @@ const StaffHouse_1 = __importDefault(require("../../../model/staff/staffDashboar
 const crypto_1 = __importDefault(require("crypto"));
 const uuid_1 = require("uuid");
 const axios_1 = __importDefault(require("axios"));
+const staffTravel_1 = __importDefault(require("../../../model/staff/staffDashboard/staffTravel"));
+const staffFees_1 = __importDefault(require("../../../model/staff/staffDashboard/staffFees"));
 //admin transfer from wallet to staff wallet for staffs with no plans
 const MakeTransfer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
@@ -36,7 +38,7 @@ const MakeTransfer = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const getRecieverWallet = yield StaffWallet_1.default.findById(getReciever === null || getReciever === void 0 ? void 0 : getReciever._id);
         // SENDER ACCOUNT
         const getUser = yield adminAuth_1.default.findById(req.params.UserId);
-        const getUserWallet = yield adminWallets_1.default.findById(req.params.WalletID);
+        const getUserWallet = yield adminWallets_1.default.findById(getUser === null || getUser === void 0 ? void 0 : getUser._id);
         if (getUser && getReciever) {
             if (amount > (getUserWallet === null || getUserWallet === void 0 ? void 0 : getUserWallet.balance)) {
                 return res.status(404).json({
@@ -93,20 +95,27 @@ const MakeTransfer = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.MakeTransfer = MakeTransfer;
 //admin transfer from wallet to staff wallet for staffs with a plan
 const staffWithPlans = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d;
+    var _c, _d, _e, _f, _g, _h;
     try {
         const { walletNumber, amount } = req.body;
         const getDate = new Date().toDateString();
         const referenceGeneratedNumber = Math.floor(Math.random() * 67485753) + 243;
         //get details of the admin sending the money
-        const getAdmin = yield adminAuth_1.default.findById(req.params.userId);
-        const getAdminWallet = yield adminWallets_1.default.findById(req.params.walletID);
+        const getAdmin = yield adminAuth_1.default.findById(req.params.adminId);
+        const getAdminWallet = yield adminWallets_1.default.findById(getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin._id);
         ///get the details of the staff you want to pay
         const getStaff = yield staffAuth_1.default.findOne({ walletNumber });
         const getStaffWallet = yield StaffWallet_1.default.findById(getStaff === null || getStaff === void 0 ? void 0 : getStaff._id);
         //get staff with either plans
-        const getPlan = yield StaffHouse_1.default.findById(req.params.planId);
-        if ((getPlan === null || getPlan === void 0 ? void 0 : getPlan.subscribe) === true) {
+        const getHousePlan = yield StaffHouse_1.default.findById(getStaff === null || getStaff === void 0 ? void 0 : getStaff._id);
+        const getTravelPlan = yield staffTravel_1.default.findById(getStaff === null || getStaff === void 0 ? void 0 : getStaff._id);
+        const getSchool = yield staffFees_1.default.findById(getStaff === null || getStaff === void 0 ? void 0 : getStaff._id);
+        if (amount > (getAdminWallet === null || getAdminWallet === void 0 ? void 0 : getAdminWallet.balance)) {
+            return res.status(404).json({
+                message: "insufficent fund.",
+            });
+        }
+        else if ((getHousePlan === null || getHousePlan === void 0 ? void 0 : getHousePlan.subscribe) === true) {
             if (getStaff && getAdmin) {
                 yield adminWallets_1.default.findByIdAndUpdate(getAdminWallet === null || getAdminWallet === void 0 ? void 0 : getAdminWallet._id, {
                     balance: (getAdminWallet === null || getAdminWallet === void 0 ? void 0 : getAdminWallet.balance) - amount,
@@ -121,19 +130,19 @@ const staffWithPlans = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 });
                 (_c = getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.transactionHistory) === null || _c === void 0 ? void 0 : _c.push(new mongoose_1.default.Types.ObjectId(createHisorySender === null || createHisorySender === void 0 ? void 0 : createHisorySender._id));
                 getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.save();
-                const total = amount - getPlan.percentageRate;
+                const total = amount - getHousePlan.percentageRate;
                 yield StaffWallet_1.default.findByIdAndUpdate(getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet._id, {
                     balance: (getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet.balance) + total,
                     credit: amount,
                     debit: 0,
                 });
-                yield StaffHouse_1.default.findByIdAndUpdate(getPlan === null || getPlan === void 0 ? void 0 : getPlan._id, {
-                    percentageRate: getPlan === null || getPlan === void 0 ? void 0 : getPlan.percentageRate,
-                    totalBal: total,
+                yield StaffHouse_1.default.findByIdAndUpdate(getHousePlan === null || getHousePlan === void 0 ? void 0 : getHousePlan._id, {
+                    percentageRate: getHousePlan === null || getHousePlan === void 0 ? void 0 : getHousePlan.percentageRate,
+                    totalBal: getHousePlan.totalBal + (getHousePlan === null || getHousePlan === void 0 ? void 0 : getHousePlan.percentageRate),
                     subscribe: true,
                 });
                 const createHisoryReciever = yield stafftransactionHistorys_1.default.create({
-                    message: `an amount of ${amount} has been sent to you by ${getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.companyname} but the sum of ${getPlan === null || getPlan === void 0 ? void 0 : getPlan.percentageRate} has been deducted`,
+                    message: `an amount of ${amount} has been sent to you by ${getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.companyname} but the sum of ${getHousePlan === null || getHousePlan === void 0 ? void 0 : getHousePlan.percentageRate} has been deducted`,
                     transactionType: "credit",
                     receiver: getStaff === null || getStaff === void 0 ? void 0 : getStaff.yourName,
                     transactionReference: referenceGeneratedNumber,
@@ -145,9 +154,87 @@ const staffWithPlans = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 message: "Transaction successfull",
             });
         }
+        else if ((getTravelPlan === null || getTravelPlan === void 0 ? void 0 : getTravelPlan.subscribe) === true) {
+            if (getStaff && getAdmin) {
+                yield adminWallets_1.default.findByIdAndUpdate(getAdminWallet === null || getAdminWallet === void 0 ? void 0 : getAdminWallet._id, {
+                    balance: (getAdminWallet === null || getAdminWallet === void 0 ? void 0 : getAdminWallet.balance) - amount,
+                    credit: 0,
+                    debit: amount,
+                });
+                const createHisorySender = yield adminTransactionHistorys_1.default.create({
+                    message: `you have sent ${amount} to ${getStaff === null || getStaff === void 0 ? void 0 : getStaff.yourName}`,
+                    receiver: getStaff === null || getStaff === void 0 ? void 0 : getStaff.yourName,
+                    transactionReference: referenceGeneratedNumber,
+                    date: getDate,
+                });
+                (_e = getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.transactionHistory) === null || _e === void 0 ? void 0 : _e.push(new mongoose_1.default.Types.ObjectId(createHisorySender === null || createHisorySender === void 0 ? void 0 : createHisorySender._id));
+                getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.save();
+                const total = amount - getTravelPlan.percentageRate;
+                yield StaffWallet_1.default.findByIdAndUpdate(getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet._id, {
+                    balance: (getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet.balance) + total,
+                    credit: amount,
+                    debit: 0,
+                });
+                yield staffTravel_1.default.findByIdAndUpdate(getTravelPlan === null || getTravelPlan === void 0 ? void 0 : getTravelPlan._id, {
+                    percentageRate: getTravelPlan === null || getTravelPlan === void 0 ? void 0 : getTravelPlan.percentageRate,
+                    totalBal: getTravelPlan.totalBal + (getTravelPlan === null || getTravelPlan === void 0 ? void 0 : getTravelPlan.percentageRate),
+                    subscribe: true,
+                }, { new: true });
+                const createHisoryReciever = yield stafftransactionHistorys_1.default.create({
+                    message: `an amount of ${amount} was sent to you by ${getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.companyname} but the sum of ${getTravelPlan === null || getTravelPlan === void 0 ? void 0 : getTravelPlan.percentageRate} has been deducted as part of your subscribed plans`,
+                    transactionType: "credit",
+                    receiver: getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.yourName,
+                    transactionReference: referenceGeneratedNumber,
+                });
+                (_f = getStaff === null || getStaff === void 0 ? void 0 : getStaff.transactionHistory) === null || _f === void 0 ? void 0 : _f.push(new mongoose_1.default.Types.ObjectId(createHisoryReciever === null || createHisoryReciever === void 0 ? void 0 : createHisoryReciever._id));
+                getStaff === null || getStaff === void 0 ? void 0 : getStaff.save();
+            }
+            return res.status(200).json({
+                message: "Transaction successfull",
+            });
+        }
+        else if ((getSchool === null || getSchool === void 0 ? void 0 : getSchool.subscribe) === true) {
+            if (getStaff && getAdmin) {
+                yield adminWallets_1.default.findByIdAndUpdate(getAdminWallet === null || getAdminWallet === void 0 ? void 0 : getAdminWallet._id, {
+                    balance: (getAdminWallet === null || getAdminWallet === void 0 ? void 0 : getAdminWallet.balance) - amount,
+                    credit: 0,
+                    debit: amount,
+                });
+                const createHisorySender = yield adminTransactionHistorys_1.default.create({
+                    message: `you have sent ${amount} to ${getStaff === null || getStaff === void 0 ? void 0 : getStaff.yourName}`,
+                    receiver: getStaff === null || getStaff === void 0 ? void 0 : getStaff.yourName,
+                    transactionReference: referenceGeneratedNumber,
+                    date: getDate,
+                });
+                (_g = getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.transactionHistory) === null || _g === void 0 ? void 0 : _g.push(new mongoose_1.default.Types.ObjectId(createHisorySender === null || createHisorySender === void 0 ? void 0 : createHisorySender._id));
+                getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.save();
+                const total = amount - getSchool.percentageRate;
+                yield StaffWallet_1.default.findByIdAndUpdate(getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet._id, {
+                    balance: (getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet.balance) + total,
+                    credit: amount,
+                    debit: 0,
+                });
+                yield staffFees_1.default.findByIdAndUpdate(getSchool === null || getSchool === void 0 ? void 0 : getSchool._id, {
+                    percentageRate: getSchool === null || getSchool === void 0 ? void 0 : getSchool.percentageRate,
+                    totalBal: getSchool.totalBal + (getSchool === null || getSchool === void 0 ? void 0 : getSchool.percentageRate),
+                    subscribe: true,
+                });
+                const createHisoryReciever = yield stafftransactionHistorys_1.default.create({
+                    message: `an amount of ${amount} has been sent to you by ${getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.companyname} but the sum of ${getSchool === null || getSchool === void 0 ? void 0 : getSchool.percentageRate} has been deducted`,
+                    transactionType: "credit",
+                    receiver: getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.yourName,
+                    transactionReference: referenceGeneratedNumber,
+                });
+                (_h = getStaff === null || getStaff === void 0 ? void 0 : getStaff.transactionHistory) === null || _h === void 0 ? void 0 : _h.push(new mongoose_1.default.Types.ObjectId(createHisoryReciever === null || createHisoryReciever === void 0 ? void 0 : createHisoryReciever._id));
+                getStaff === null || getStaff === void 0 ? void 0 : getStaff.save();
+            }
+            return res.status(200).json({
+                message: "Transaction successfull",
+            });
+        }
         else {
             return res.status(404).json({
-                message: "Account not found",
+                message: "Account not found or insufficient money",
             });
         }
     }
@@ -161,7 +248,7 @@ const staffWithPlans = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.staffWithPlans = staffWithPlans;
 //fund your wallet from your bank
 const fundWalletFromBank = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _e;
+    var _j;
     try {
         const getUser = yield adminAuth_1.default.findById(req.params.userId);
         const getWallet = yield adminWallets_1.default.findById(req.params.walletId);
@@ -174,7 +261,7 @@ const fundWalletFromBank = (req, res) => __awaiter(void 0, void 0, void 0, funct
             transactionType: "credit",
             transactionReference: transactinRef,
         });
-        (_e = getUser === null || getUser === void 0 ? void 0 : getUser.transactionHistory) === null || _e === void 0 ? void 0 : _e.push(new mongoose_1.default.Types.ObjectId(createHisorySender === null || createHisorySender === void 0 ? void 0 : createHisorySender._id));
+        (_j = getUser === null || getUser === void 0 ? void 0 : getUser.transactionHistory) === null || _j === void 0 ? void 0 : _j.push(new mongoose_1.default.Types.ObjectId(createHisorySender === null || createHisorySender === void 0 ? void 0 : createHisorySender._id));
         res.status(200).json({
             message: "Wallet updated successfully",
         });

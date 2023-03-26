@@ -12,6 +12,9 @@ const StaffAuth = new mongoose_1.default.Schema({
         type: String,
         required: [true, "please enter your name"],
     },
+    plans: {
+        type: Boolean
+    },
     email: {
         type: String,
         required: true,

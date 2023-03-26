@@ -10,7 +10,11 @@ const travelSchema = new mongoose_1.default.Schema({
     },
     totalBal: {
         type: Number,
-    }
+    },
+    subscribe: {
+        type: Boolean,
+        default: false
+    },
 });
 const travelModel = mongoose_1.default.model("staffTravelAndTour", travelSchema);
 exports.default = travelModel;

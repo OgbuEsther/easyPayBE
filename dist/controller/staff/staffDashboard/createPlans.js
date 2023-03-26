@@ -12,12 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.investPlan = exports.FeesPlan = exports.HousePlan = void 0;
+exports.travelPlan = exports.FeesPlan = exports.HousePlan = void 0;
 const staffAuth_1 = __importDefault(require("../../../model/staff/staffAuth"));
 const StaffHouse_1 = __importDefault(require("../../../model/staff/staffDashboard/StaffHouse"));
 const staffFees_1 = __importDefault(require("../../../model/staff/staffDashboard/staffFees"));
-const staffInvestment_1 = __importDefault(require("../../../model/staff/staffDashboard/staffInvestment"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const staffTravel_1 = __importDefault(require("../../../model/staff/staffDashboard/staffTravel"));
 //create house plan
 const HousePlan = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -27,8 +27,9 @@ const HousePlan = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // const getStaff =
         const createHousePlan = yield StaffHouse_1.default.create({
             percentageRate,
-            totalBal: 0,
+            totalBal: 0.00,
             subscribe,
+            _id: getStaff === null || getStaff === void 0 ? void 0 : getStaff._id
         });
         yield ((_a = getStaff === null || getStaff === void 0 ? void 0 : getStaff.houseRentPlan) === null || _a === void 0 ? void 0 : _a.push(new mongoose_1.default.Types.ObjectId(createHousePlan === null || createHousePlan === void 0 ? void 0 : createHousePlan._id)));
         getStaff === null || getStaff === void 0 ? void 0 : getStaff.save();
@@ -50,13 +51,13 @@ const FeesPlan = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     try {
         const { percentageRate, totalBal, subscribe } = req.body;
-        // const getStaff =
+        const getStaff = yield staffAuth_1.default.findById(req.params.staffId);
         const createFeesPlan = yield staffFees_1.default.create({
             percentageRate,
-            totalBal,
+            totalBal: 0.00,
             subscribe,
+            _id: getStaff === null || getStaff === void 0 ? void 0 : getStaff._id
         });
-        const getStaff = yield staffAuth_1.default.findById(req.params.staffId);
         yield ((_b = getStaff === null || getStaff === void 0 ? void 0 : getStaff.schoolFeesPlan) === null || _b === void 0 ? void 0 : _b.push(new mongoose_1.default.Types.ObjectId(createFeesPlan === null || createFeesPlan === void 0 ? void 0 : createFeesPlan._id)));
         getStaff === null || getStaff === void 0 ? void 0 : getStaff.save();
         return res.status(201).json({
@@ -73,23 +74,24 @@ const FeesPlan = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.FeesPlan = FeesPlan;
-const investPlan = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const travelPlan = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _c;
     try {
         const { percentageRate, totalBal, subscribe } = req.body;
+        const getStaff = yield staffAuth_1.default.findById(req.params.staffId);
         if (subscribe === true) {
             // const getStaff =
-            const createInvestPlan = yield staffInvestment_1.default.create({
+            const createTravelPlan = yield staffTravel_1.default.create({
                 percentageRate,
-                totalBal,
+                totalBal: 0.00,
                 subscribe,
+                _id: getStaff === null || getStaff === void 0 ? void 0 : getStaff._id
             });
-            const getStaff = yield staffAuth_1.default.findById(req.params.staffId);
-            yield ((_c = getStaff === null || getStaff === void 0 ? void 0 : getStaff.investmentPlan) === null || _c === void 0 ? void 0 : _c.push(new mongoose_1.default.Types.ObjectId(createInvestPlan === null || createInvestPlan === void 0 ? void 0 : createInvestPlan._id)));
+            yield ((_c = getStaff === null || getStaff === void 0 ? void 0 : getStaff.travelAndTour) === null || _c === void 0 ? void 0 : _c.push(new mongoose_1.default.Types.ObjectId(createTravelPlan === null || createTravelPlan === void 0 ? void 0 : createTravelPlan._id)));
             getStaff === null || getStaff === void 0 ? void 0 : getStaff.save();
             return res.status(201).json({
-                message: "created invest plan",
-                data: createInvestPlan,
+                message: "created travel plan",
+                data: createTravelPlan,
             });
         }
         else {
@@ -106,4 +108,4 @@ const investPlan = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
     }
 });
-exports.investPlan = investPlan;
+exports.travelPlan = travelPlan;

@@ -3,8 +3,8 @@ import { checkOutToBank, checkPayment, fundWalletFromBank, MakeTransfer, staffWi
 
 const AdminRoutes = Router()
 
-AdminRoutes.post("/paysalary/:UserId/:WalletID", MakeTransfer)
-AdminRoutes.post("/paysalarywithhouseplan/:userId/:walletID/:planId", staffWithPlans)
+AdminRoutes.post("/paysalary/:UserId", MakeTransfer)
+AdminRoutes.post("/paysalarywithhouseplan/:adminId", staffWithPlans)
 AdminRoutes.post("/fundwallet/:userId/:walletId",fundWalletFromBank )
 AdminRoutes.route("/pay/:id").patch(checkPayment);
 AdminRoutes.route("/pay-out/:id").post(checkOutToBank);

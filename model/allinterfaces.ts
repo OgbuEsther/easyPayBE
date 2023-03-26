@@ -15,6 +15,7 @@ export interface staffSignUp {
   yourName: string;
   email: string;
   password: string;
+  plans:boolean
   // companyName: string;
   companyname: string;
   position: string;

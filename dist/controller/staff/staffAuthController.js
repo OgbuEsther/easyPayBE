@@ -84,6 +84,11 @@ const staffSignin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { companyname, email, password } = req.body;
         const staff = yield staffAuth_1.default.findOne({ email });
+        if (!companyname) {
+            return res.status(400).json({
+                message: "company not found",
+            });
+        }
         return res.status(200).json({
             message: "Success , staff is logged in",
             data: staff,

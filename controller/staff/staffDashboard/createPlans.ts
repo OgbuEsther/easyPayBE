@@ -4,6 +4,7 @@ import feesModel from "../../../model/staff/staffDashboard/staffFees";
 import investModel from "../../../model/staff/staffDashboard/staffInvestment";
 import mongoose from "mongoose";
 import { Request, Response } from "express";
+import travelModel from "../../../model/staff/staffDashboard/staffTravel";
 
 //create house plan
 
@@ -14,8 +15,9 @@ export const HousePlan = async (req: Request, res: Response) => {
     // const getStaff =
     const createHousePlan = await houseModel.create({
       percentageRate,
-      totalBal: 0,
+      totalBal :0.00,
       subscribe,
+      _id:getStaff?._id
     });
     await getStaff?.houseRentPlan?.push(
       new mongoose.Types.ObjectId(createHousePlan?._id)
@@ -37,14 +39,15 @@ export const HousePlan = async (req: Request, res: Response) => {
 export const FeesPlan = async (req: Request, res: Response) => {
   try {
     const { percentageRate, totalBal, subscribe } = req.body;
-
-    // const getStaff =
+    const getStaff = await staffAuth.findById(req.params.staffId);
+  
     const createFeesPlan = await feesModel.create({
       percentageRate,
-      totalBal,
+      totalBal :0.00,
       subscribe,
+      _id:getStaff?._id
     });
-    const getStaff = await staffAuth.findById(req.params.staffId);
+    
 
     await getStaff?.schoolFeesPlan?.push(
       new mongoose.Types.ObjectId(createFeesPlan?._id)
@@ -62,30 +65,31 @@ export const FeesPlan = async (req: Request, res: Response) => {
     });
   }
 };
-export const investPlan = async (req: Request, res: Response) => {
+export const travelPlan = async (req: Request, res: Response) => {
   try {
     const { percentageRate, totalBal, subscribe } = req.body;
-
-    if (subscribe === true) {
+    const getStaff = await staffAuth.findById(req.params.staffId);
+    if (subscribe === true ) {
       // const getStaff =
-      const createInvestPlan = await investModel.create({
+      const createTravelPlan = await travelModel.create({
         percentageRate,
-        totalBal,
+        totalBal :0.00,
         subscribe,
+        _id:getStaff?._id
       });
 
-      const getStaff = await staffAuth.findById(req.params.staffId);
+     
 
-      await getStaff?.investmentPlan?.push(
-        new mongoose.Types.ObjectId(createInvestPlan?._id)
+      await getStaff?.travelAndTour?.push(
+        new mongoose.Types.ObjectId(createTravelPlan?._id)
       );
       getStaff?.save();
 
       return res.status(201).json({
-        message: "created invest plan",
-        data: createInvestPlan,
+        message: "created travel plan",
+        data: createTravelPlan,
       });
-    } else {
+    }else {
       return res.status(404).json({
         message: "cant create plan because you are not subscribed",
       });

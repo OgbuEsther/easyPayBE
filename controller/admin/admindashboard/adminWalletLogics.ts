@@ -10,6 +10,8 @@ import houseModel from "../../../model/staff/staffDashboard/StaffHouse";
 import crypto from "crypto";
 import { v4 as uuid } from "uuid";
 import axios from "axios";
+import travelModel from "../../../model/staff/staffDashboard/staffTravel";
+import feesModel from "../../../model/staff/staffDashboard/staffFees";
 
 //admin transfer from wallet to staff wallet for staffs with no plans
 
@@ -26,7 +28,7 @@ export const MakeTransfer = async (req: Request, res: Response) => {
 
     // SENDER ACCOUNT
     const getUser = await adminAuth.findById(req.params.UserId);
-    const getUserWallet = await adminWalletModel.findById(req.params.WalletID);
+    const getUserWallet = await adminWalletModel.findById(getUser?._id);
 
     if (getUser && getReciever) {
       if (amount > getUserWallet?.balance!) {
@@ -99,8 +101,8 @@ export const staffWithPlans = async (req: Request, res: Response) => {
     const referenceGeneratedNumber = Math.floor(Math.random() * 67485753) + 243;
 
     //get details of the admin sending the money
-    const getAdmin = await adminAuth.findById(req.params.userId);
-    const getAdminWallet = await adminWalletModel.findById(req.params.walletID);
+    const getAdmin = await adminAuth.findById(req.params.adminId);
+    const getAdminWallet = await adminWalletModel.findById(getAdmin?._id);
 
     ///get the details of the staff you want to pay
     const getStaff = await staffAuth.findOne({ walletNumber });
@@ -108,9 +110,15 @@ export const staffWithPlans = async (req: Request, res: Response) => {
 
     //get staff with either plans
 
-    const getPlan = await houseModel.findById(req.params.planId);
+    const getHousePlan = await houseModel.findById(getStaff?._id);
+    const getTravelPlan = await travelModel.findById(getStaff?._id)
+    const getSchool = await feesModel.findById(getStaff?._id)
 
-    if (getPlan?.subscribe === true) {
+    if (amount > getAdminWallet?.balance!) {
+      return res.status(404).json({
+        message: "insufficent fund.",
+      });
+    }else if (getHousePlan?.subscribe === true) {
       if (getStaff && getAdmin) {
         await adminWalletModel.findByIdAndUpdate(getAdminWallet?._id, {
           balance: getAdminWallet?.balance! - amount,
@@ -129,7 +137,7 @@ export const staffWithPlans = async (req: Request, res: Response) => {
         );
         getAdmin?.save();
 
-        const total = amount - getPlan.percentageRate;
+        const total = amount - getHousePlan.percentageRate;
 
         await staffWalletModel.findByIdAndUpdate(getStaffWallet?._id, {
           balance: getStaffWallet?.balance! + total,
@@ -137,14 +145,14 @@ export const staffWithPlans = async (req: Request, res: Response) => {
           debit: 0,
         });
 
-        await houseModel.findByIdAndUpdate(getPlan?._id, {
-          percentageRate: getPlan?.percentageRate,
-          totalBal: total,
+        await houseModel.findByIdAndUpdate(getHousePlan?._id, {
+          percentageRate: getHousePlan?.percentageRate,
+          totalBal: getHousePlan.totalBal +getHousePlan?.percentageRate,
           subscribe: true,
         });
 
         const createHisoryReciever = await staffTransactionHistory.create({
-          message: `an amount of ${amount} has been sent to you by ${getAdmin?.companyname} but the sum of ${getPlan?.percentageRate} has been deducted`,
+          message: `an amount of ${amount} has been sent to you by ${getAdmin?.companyname} but the sum of ${getHousePlan?.percentageRate} has been deducted`,
           transactionType: "credit",
           receiver: getStaff?.yourName,
           transactionReference: referenceGeneratedNumber,
@@ -158,9 +166,103 @@ export const staffWithPlans = async (req: Request, res: Response) => {
       return res.status(200).json({
         message: "Transaction successfull",
       });
-    } else {
+    } else if(getTravelPlan?.subscribe === true){
+      if (getStaff && getAdmin) {
+        await adminWalletModel.findByIdAndUpdate(getAdminWallet?._id, {
+          balance: getAdminWallet?.balance! - amount,
+          credit: 0,
+          debit: amount,
+        });
+        const createHisorySender = await adminTransactionHistory.create({
+          message: `you have sent ${amount} to ${getStaff?.yourName}`,
+          receiver: getStaff?.yourName,
+          transactionReference: referenceGeneratedNumber,
+          date: getDate,
+        });
+
+        getAdmin?.transactionHistory?.push(
+          new mongoose.Types.ObjectId(createHisorySender?._id)
+        );
+        getAdmin?.save();
+
+        const total = amount - getTravelPlan.percentageRate!;
+
+        await staffWalletModel.findByIdAndUpdate(getStaffWallet?._id, {
+          balance: getStaffWallet?.balance! + total,
+          credit: amount,
+          debit: 0,
+        });
+
+        await travelModel.findByIdAndUpdate(getTravelPlan?._id, {
+          percentageRate: getTravelPlan?.percentageRate,
+          totalBal: getTravelPlan.totalBal +getTravelPlan?.percentageRate ,
+          subscribe: true,
+        } , {new :true});
+
+        const createHisoryReciever = await staffTransactionHistory.create({
+          message: `an amount of ${amount} was sent to you by ${getAdmin?.companyname} but the sum of ${getTravelPlan?.percentageRate} has been deducted as part of your subscribed plans`,
+          transactionType: "credit",
+          receiver: getAdmin?.yourName,
+          transactionReference: referenceGeneratedNumber,
+        });
+        getStaff?.transactionHistory?.push(
+          new mongoose.Types.ObjectId(createHisoryReciever?._id)
+        );
+        getStaff?.save();
+      }
+      return res.status(200).json({
+        message: "Transaction successfull",
+      });
+    }else if(getSchool?.subscribe === true){
+      if (getStaff && getAdmin) {
+        await adminWalletModel.findByIdAndUpdate(getAdminWallet?._id, {
+          balance: getAdminWallet?.balance! - amount,
+          credit: 0,
+          debit: amount,
+        });
+        const createHisorySender = await adminTransactionHistory.create({
+          message: `you have sent ${amount} to ${getStaff?.yourName}`,
+          receiver: getStaff?.yourName,
+          transactionReference: referenceGeneratedNumber,
+          date: getDate,
+        });
+
+        getAdmin?.transactionHistory?.push(
+          new mongoose.Types.ObjectId(createHisorySender?._id)
+        );
+        getAdmin?.save();
+
+        const total = amount - getSchool.percentageRate;
+
+        await staffWalletModel.findByIdAndUpdate(getStaffWallet?._id, {
+          balance: getStaffWallet?.balance! + total,
+          credit: amount,
+          debit: 0,
+        });
+
+        await feesModel.findByIdAndUpdate(getSchool?._id, {
+          percentageRate: getSchool?.percentageRate,
+          totalBal: getSchool.totalBal +getSchool?.percentageRate,
+          subscribe: true,
+        });
+
+        const createHisoryReciever = await staffTransactionHistory.create({
+          message: `an amount of ${amount} has been sent to you by ${getAdmin?.companyname} but the sum of ${getSchool?.percentageRate} has been deducted`,
+          transactionType: "credit",
+          receiver: getAdmin?.yourName,
+          transactionReference: referenceGeneratedNumber,
+        });
+        getStaff?.transactionHistory?.push(
+          new mongoose.Types.ObjectId(createHisoryReciever?._id)
+        );
+        getStaff?.save();
+      }
+      return res.status(200).json({
+        message: "Transaction successfull",
+      });
+    }else {
       return res.status(404).json({
-        message: "Account not found",
+        message: "Account not found or insufficient money",
       });
     }
   } catch (error) {

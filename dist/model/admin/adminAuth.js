@@ -10,6 +10,7 @@ const AdminAuth = new mongoose_1.default.Schema({
     },
     companyname: {
         type: String,
+        unique: true
     },
     companyEmail: {
         type: String,
