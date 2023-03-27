@@ -21,7 +21,7 @@ const adminTransactionHistorySchema =
     },
   });
 const adminTransactionHistory = mongoose.model<admin>(
-  "adminTransaction",
+  "adminTransactionHistory",
   adminTransactionHistorySchema
 );
 
