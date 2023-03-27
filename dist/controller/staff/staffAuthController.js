@@ -105,11 +105,19 @@ exports.staffSignin = staffSignin;
 //get all admins
 const getAllStaff = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const staff = yield staffAuth_1.default.find();
-        return res.status(200).json({
-            message: "get all staff",
-            data: staff,
-        });
+        const getAdmin = yield adminAuth_1.default.findById(req.params.adminId);
+        if (getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.companyname) {
+            const staff = yield staffAuth_1.default.find();
+            return res.status(200).json({
+                message: "get all staff",
+                data: staff,
+            });
+        }
+        else {
+            return res.status(400).json({
+                message: "couldn't get users under this company name"
+            });
+        }
     }
     catch (error) {
         return res.status(400).json({
@@ -122,7 +130,23 @@ const getAllStaff = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getAllStaff = getAllStaff;
 const getOneStaff = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const staff = yield staffAuth_1.default.findById(req.params.staffId);
+        const staff = yield staffAuth_1.default.findById(req.params.staffId).populate([
+            {
+                path: "wallet"
+            },
+            {
+                path: "transactionHistory"
+            },
+            {
+                path: "houseRentPlan"
+            },
+            {
+                path: "schoolFeesPlan"
+            },
+            {
+                path: "travelAndTour"
+            }
+        ]);
         return res.status(200).json({
             message: "gotten one staff",
             data: staff,
