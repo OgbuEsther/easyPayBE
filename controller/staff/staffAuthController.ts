@@ -118,25 +118,13 @@ export const staffSignin = async (req: Request, res: Response) => {
 //get all admins
 export const getAllStaff = async (req: Request, res: Response) => {
   try {
-    const getAdmin = await adminAuth.findById(req.params.adminId)
-   if(getAdmin?.companyname){
+  
     const staff = await staffAuth.find()
 
     return res.status(200).json({
       message: "get all staff",
       data: staff,
     });
-   }else{
-    return res.status(400).json({
-      message : "couldn't get users under this company name"
-    })
-   }
-
- 
-
-  
-
-   
   } catch (error: any) {
     return res.status(400).json({
       message: "failed to get staff",
