@@ -99,6 +99,10 @@ export const getOneAdmin = async (req: Request, res: Response) => {
       {
         path: "viewUser",
       },
+      {
+        path : "transactionHistory"
+      }
+     
     ]);
 
     return res.status(200).json({
