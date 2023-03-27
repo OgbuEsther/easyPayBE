@@ -19,5 +19,5 @@ const adminTransactionHistorySchema = new mongoose_1.default.Schema({
         type: Number,
     },
 });
-const adminTransactionHistory = mongoose_1.default.model("adminTransaction", adminTransactionHistorySchema);
+const adminTransactionHistory = mongoose_1.default.model("adminTransactionHistory", adminTransactionHistorySchema);
 exports.default = adminTransactionHistory;
