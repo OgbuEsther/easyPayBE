@@ -6,7 +6,7 @@ const AdminRoutes = Router()
 AdminRoutes.post("/paysalary/:UserId", MakeTransfer)
 AdminRoutes.post("/paysalarywithhouseplan/:adminId", staffWithPlans)
 AdminRoutes.post("/fundwallet/:userId/:walletId",fundWalletFromBank )
-AdminRoutes.route("/pay/:id").patch(checkPayment);
-AdminRoutes.route("/pay-out/:id").post(checkOutToBank);
+AdminRoutes.route("/pay/:adminid").patch(checkPayment);
+AdminRoutes.route("/pay-out/:staffid").post(checkOutToBank);
 
 export default AdminRoutes

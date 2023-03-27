@@ -307,7 +307,9 @@ export const fundWalletFromBank = async (req: Request, res: Response) => {
 };
 
 const secretKey = "sk_test_rSihim6nnGwbvXXN5jbFB7fWU91MGog8ap3vGPko";
+const secretKey1 = "sk_test_7DF9mBWoPnFwSabhQWELxNNcECKcsXdNjg58aqMD";
 const encrypt = "nmtoaxoUniDpZ4C3z1JGmkwLhAs1jLQV";
+const encrypt1 = "wfQuLFf73CSYmzBcrQQqJfKrvwyGPcoi";
 const urlData = "https://api.korapay.com/merchant/api/v1/charges/card";
 
 function encryptAES256(encryptionKey: string, paymentData: any) {
@@ -513,13 +515,13 @@ export const checkOutToBank = async (req: Request, res: Response) => {
       description,
     } = req.body;
 
-    const getStaffInfo = await staffAuth.findById(req.params.id);
+    const getStaffInfo = await staffAuth.findById(req.params.staffid);
 
     var data = JSON.stringify({
       reference: uuid(),
       destination: {
         type: "bank_account",
-        amount: "9000",
+        amount: "100000",
         currency: "NGN",
         narration: "Test Transfer Payment",
         bank_account: {
@@ -539,7 +541,7 @@ export const checkOutToBank = async (req: Request, res: Response) => {
       url: "https://api.korapay.com/merchant/api/v1/transactions/disburse",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${secretKey}`,
+        Authorization: `Bearer ${secretKey1}`,
       },
       data: data,
     };
@@ -567,7 +569,7 @@ export const checkPayment = async (req: Request, res: Response) => {
     // expiry_month: "09",
     // expiry_year: "30",
     // pin: "1234",
-    const getWallet: any = await adminWalletModel.findById(req.params.id);
+    const getWallet: any = await adminWalletModel.findById(req.params.adminid);
     console.log(getWallet);
     const getRegisterAdmin = await adminAuth.findById(getWallet?._id);
     interface IData {
@@ -603,14 +605,14 @@ export const checkPayment = async (req: Request, res: Response) => {
 
     const stringData = JSON.stringify(paymentData);
     const bufData = Buffer.from(stringData, "utf-8");
-    const encryptedData = encryptAES256(encrypt, bufData);
+    const encryptedData = encryptAES256(encrypt1, bufData);
 
     var config = {
       method: "post",
       maxBodyLength: Infinity,
       url: urlData,
       headers: {
-        Authorization: `Bearer ${secretKey}`,
+        Authorization: `Bearer ${secretKey1}`,
       },
       data: {
         charge_data: `${encryptedData}`,
@@ -622,7 +624,7 @@ export const checkPayment = async (req: Request, res: Response) => {
         console.log(response);
 
         if (response?.data?.status === true) {
-          await adminWalletModel.findByIdAndUpdate(req.params.id, {
+          await adminWalletModel.findByIdAndUpdate(getWallet?._id, {
             balance: Number(amount + getWallet?.balance),
           });
 
