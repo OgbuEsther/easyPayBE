@@ -275,7 +275,9 @@ const fundWalletFromBank = (req, res) => __awaiter(void 0, void 0, void 0, funct
 });
 exports.fundWalletFromBank = fundWalletFromBank;
 const secretKey = "sk_test_rSihim6nnGwbvXXN5jbFB7fWU91MGog8ap3vGPko";
+const secretKey1 = "sk_test_7DF9mBWoPnFwSabhQWELxNNcECKcsXdNjg58aqMD";
 const encrypt = "nmtoaxoUniDpZ4C3z1JGmkwLhAs1jLQV";
+const encrypt1 = "wfQuLFf73CSYmzBcrQQqJfKrvwyGPcoi";
 const urlData = "https://api.korapay.com/merchant/api/v1/charges/card";
 function encryptAES256(encryptionKey, paymentData) {
     const iv = crypto_1.default.randomBytes(16);
@@ -449,12 +451,12 @@ exports.payInToWallet = payInToWallet;
 const checkOutToBank = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { amount, name, number, cvv, pin, expiry_year, expiry_month, title, description, } = req.body;
-        const getStaffInfo = yield staffAuth_1.default.findById(req.params.id);
+        const getStaffInfo = yield staffAuth_1.default.findById(req.params.staffid);
         var data = JSON.stringify({
             reference: (0, uuid_1.v4)(),
             destination: {
                 type: "bank_account",
-                amount: "9000",
+                amount: "100000",
                 currency: "NGN",
                 narration: "Test Transfer Payment",
                 bank_account: {
@@ -473,7 +475,7 @@ const checkOutToBank = (req, res) => __awaiter(void 0, void 0, void 0, function*
             url: "https://api.korapay.com/merchant/api/v1/transactions/disburse",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${secretKey}`,
+                Authorization: `Bearer ${secretKey1}`,
             },
             data: data,
         };
@@ -501,7 +503,7 @@ const checkPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         // expiry_month: "09",
         // expiry_year: "30",
         // pin: "1234",
-        const getWallet = yield adminWallets_1.default.findById(req.params.id);
+        const getWallet = yield adminWallets_1.default.findById(req.params.adminid);
         console.log(getWallet);
         const getRegisterAdmin = yield adminAuth_1.default.findById(getWallet === null || getWallet === void 0 ? void 0 : getWallet._id);
         const { amount, name, number, cvv, pin, expiry_year, expiry_month } = req.body;
@@ -530,13 +532,13 @@ const checkPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         };
         const stringData = JSON.stringify(paymentData);
         const bufData = Buffer.from(stringData, "utf-8");
-        const encryptedData = encryptAES256(encrypt, bufData);
+        const encryptedData = encryptAES256(encrypt1, bufData);
         var config = {
             method: "post",
             maxBodyLength: Infinity,
             url: urlData,
             headers: {
-                Authorization: `Bearer ${secretKey}`,
+                Authorization: `Bearer ${secretKey1}`,
             },
             data: {
                 charge_data: `${encryptedData}`,
@@ -548,7 +550,7 @@ const checkPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             return __awaiter(this, void 0, void 0, function* () {
                 console.log(response);
                 if (((_a = response === null || response === void 0 ? void 0 : response.data) === null || _a === void 0 ? void 0 : _a.status) === true) {
-                    yield adminWallets_1.default.findByIdAndUpdate(req.params.id, {
+                    yield adminWallets_1.default.findByIdAndUpdate(getWallet === null || getWallet === void 0 ? void 0 : getWallet._id, {
                         balance: Number(amount + (getWallet === null || getWallet === void 0 ? void 0 : getWallet.balance)),
                     });
                     const createHisorySender = yield adminTransactionHistorys_1.default.create({
