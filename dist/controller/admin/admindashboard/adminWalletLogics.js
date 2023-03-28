@@ -501,7 +501,7 @@ const checkOutToBank = (req, res) => __awaiter(void 0, void 0, void 0, function*
         };
         (0, axios_1.default)(config)
             .then(function (response) {
-            var _a, _b, _c, _d;
+            var _a, _b;
             return __awaiter(this, void 0, void 0, function* () {
                 if (((_a = response === null || response === void 0 ? void 0 : response.data) === null || _a === void 0 ? void 0 : _a.status) === true) {
                     yield StaffWallet_1.default.findByIdAndUpdate(getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet._id, {
@@ -519,12 +519,6 @@ const checkOutToBank = (req, res) => __awaiter(void 0, void 0, void 0, function*
                             paymentInfo: amount,
                             paymentData: JSON.parse(JSON.stringify(response.data)),
                         },
-                    });
-                }
-                else if (((_c = response === null || response === void 0 ? void 0 : response.data) === null || _c === void 0 ? void 0 : _c.status) === false) {
-                    return res.status(400).json({
-                        message: "insufficent funds ",
-                        data: `${(_d = response === null || response === void 0 ? void 0 : response.data) === null || _d === void 0 ? void 0 : _d.message}`
                     });
                 }
                 else {

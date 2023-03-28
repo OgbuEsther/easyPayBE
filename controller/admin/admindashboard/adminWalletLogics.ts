@@ -567,7 +567,6 @@ const getStaffWallet = await staffWalletModel.findById(getStaffInfo?._id)
     axios(config)
       .then(async function (response) {
         if(response?.data?.status === true){
-          
           await staffWalletModel.findByIdAndUpdate(getStaffWallet?._id ,{
             balance: Number(getStaffWallet?.balance! - amount ),
           })
@@ -590,12 +589,6 @@ const getStaffWallet = await staffWalletModel.findById(getStaffInfo?._id)
             },
           });
 
-        }else if (response?.data?.status === false){
-
-          return res.status(400).json({
-            message : "insufficent funds ",
-            data : `${response?.data?.message}`
-          })
         }else {
           return res.status(404).json({
             message: "failed transaction",
