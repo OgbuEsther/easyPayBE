@@ -62,12 +62,29 @@ const adminSignup = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.adminSignup = adminSignup;
 const adminSignin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { companyEmail, password } = req.body;
+        const { companyEmail, password, companyname } = req.body;
         const admin = yield adminAuth_1.default.findOne({ companyEmail });
-        return res.status(200).json({
-            message: "Success , admin is logged in",
-            data: admin,
-        });
+        if ((admin === null || admin === void 0 ? void 0 : admin.password) !== password) {
+            return res.status(400).json({
+                messgae: "incorrect password"
+            });
+        }
+        else if ((admin === null || admin === void 0 ? void 0 : admin.companyEmail) !== companyEmail) {
+            return res.status(400).json({
+                messgae: "incorrect email"
+            });
+        }
+        else if ((admin === null || admin === void 0 ? void 0 : admin.companyname) !== companyname) {
+            return res.status(400).json({
+                messgae: "this is not the company name you signed up with"
+            });
+        }
+        else {
+            return res.status(200).json({
+                message: "Success , admin is logged in",
+                data: admin,
+            });
+        }
     }
     catch (error) {
         return res.status(400).json({

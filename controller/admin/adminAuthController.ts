@@ -55,14 +55,35 @@ export const adminSignup = async (req: Request, res: Response) => {
 
 export const adminSignin = async (req: Request, res: Response) => {
   try {
-    const { companyEmail, password } = req.body;
+    const { companyEmail, password , companyname } = req.body;
+
+  
 
     const admin = await adminAuth.findOne({ companyEmail });
 
-    return res.status(200).json({
+    if(admin?.password !== password){
+      return res.status(400).json({
+        messgae : "incorrect password"
+      })
+    }
+
+    else if(admin?.companyEmail !== companyEmail){
+      return res.status(400).json({
+        messgae : "incorrect email"
+      })
+    }
+   else if(admin?.companyname !== companyname){
+      return res.status(400).json({
+        messgae : "this is not the company name you signed up with"
+      })
+    }else{
+      return res.status(200).json({
       message: "Success , admin is logged in",
       data: admin,
     });
+    }
+
+    
   } catch (error: any) {
     return res.status(400).json({
       message: "an error occurred while creating admin",
