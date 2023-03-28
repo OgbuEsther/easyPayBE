@@ -567,27 +567,34 @@ const getStaffWallet = await staffWalletModel.findById(getStaffInfo?._id)
     axios(config)
       .then(async function (response) {
         if(response?.data?.status === true){
-          await staffWalletModel.findByIdAndUpdate(getStaffWallet?._id ,{
-            balance: Number(getStaffWallet?.balance! - amount ),
-          })
-
-          const createHisorySender = await staffTransactionHistory.create({
-            message: `an amount of ${amount} has been withdrawn from your wallet`,
-            transactionType: "credit",
-            // transactionReference: "12345",
-          });
-
-          getStaffInfo?.transactionHistory?.push(
-            new mongoose.Types.ObjectId(createHisorySender?._id)
-          );
-
-          return res.status(200).json({
-            message: `an amount of ${amount} has been added`,
-            data: {
-              paymentInfo: amount,
-              paymentData: JSON.parse(JSON.stringify(response.data)),
-            },
-          });
+          if (amount > getStaffWallet?.balance!) {
+            return res.status(404).json({
+              message: "insufficent fund.",
+            });
+          }else{
+            await staffWalletModel.findByIdAndUpdate(getStaffWallet?._id ,{
+              balance: Number(getStaffWallet?.balance! - amount ),
+            })
+  
+            const createHisorySender = await staffTransactionHistory.create({
+              message: `an amount of ${amount} has been withdrawn from your wallet`,
+              transactionType: "credit",
+              // transactionReference: "12345",
+            });
+  
+            getStaffInfo?.transactionHistory?.push(
+              new mongoose.Types.ObjectId(createHisorySender?._id)
+            );
+  
+            return res.status(200).json({
+              message: `an amount of ${amount} has been added`,
+              data: {
+                paymentInfo: amount,
+                paymentData: JSON.parse(JSON.stringify(response.data)),
+              },
+            });
+          }
+          
 
         }else {
           return res.status(404).json({
