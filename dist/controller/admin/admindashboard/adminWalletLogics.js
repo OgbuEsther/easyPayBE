@@ -148,7 +148,7 @@ const staffWithPlans = (req, res) => __awaiter(void 0, void 0, void 0, function*
                     totalBal: getHousePlan.totalBal + (getHousePlan === null || getHousePlan === void 0 ? void 0 : getHousePlan.percentageRate),
                     subscribe: true,
                 });
-                console.log("house plan balance");
+                console.log('house plan balance');
                 const createHisoryReciever = yield stafftransactionHistorys_1.default.create({
                     message: `an amount of ${amount} has been sent to you by ${getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.companyname} but the sum of ${getHousePlan === null || getHousePlan === void 0 ? void 0 : getHousePlan.percentageRate} has been deducted`,
                     transactionType: "credit",
@@ -177,7 +177,7 @@ const staffWithPlans = (req, res) => __awaiter(void 0, void 0, void 0, function*
                     transactionReference: referenceGeneratedNumber,
                     date: getDate,
                 });
-                console.log("testwusagd");
+                console.log('testwusagd');
                 (_e = getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.transactionHistory) === null || _e === void 0 ? void 0 : _e.push(new mongoose_1.default.Types.ObjectId(createHisorySender === null || createHisorySender === void 0 ? void 0 : createHisorySender._id));
                 getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.save();
                 const total = amount - getTravelPlan.percentageRate;
@@ -229,7 +229,7 @@ const staffWithPlans = (req, res) => __awaiter(void 0, void 0, void 0, function*
                     credit: amount,
                     debit: 0,
                 });
-                console.log("ytwyewerew");
+                console.log('ytwyewerew');
                 yield staffFees_1.default.findByIdAndUpdate(getSchool === null || getSchool === void 0 ? void 0 : getSchool._id, {
                     percentageRate: getSchool === null || getSchool === void 0 ? void 0 : getSchool.percentageRate,
                     totalBal: getSchool.totalBal + (getSchool === null || getSchool === void 0 ? void 0 : getSchool.percentageRate),
@@ -467,7 +467,7 @@ exports.payInToWallet = payInToWallet;
 // };
 const checkOutToBank = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { amount, name, number, cvv, pin, expiry_year, expiry_month, title, description, bank, account, } = req.body;
+        const { amount, name, number, cvv, pin, expiry_year, expiry_month, title, description, bank, account } = req.body;
         //account: "0000000000",
         // bank: "033",
         const getStaffInfo = yield staffAuth_1.default.findById(req.params.staffid);
@@ -501,32 +501,31 @@ const checkOutToBank = (req, res) => __awaiter(void 0, void 0, void 0, function*
         };
         (0, axios_1.default)(config)
             .then(function (response) {
-            var _a, _b;
+            var _a, _b, _c, _d;
             return __awaiter(this, void 0, void 0, function* () {
                 if (((_a = response === null || response === void 0 ? void 0 : response.data) === null || _a === void 0 ? void 0 : _a.status) === true) {
-                    if (amount > (getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet.balance)) {
-                        return res.status(400).json({
-                            message: "insufficent funds",
-                        });
-                    }
-                    else {
-                        yield StaffWallet_1.default.findByIdAndUpdate(getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet._id, {
-                            balance: Number((getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet.balance) - amount),
-                        });
-                        const createHisorySender = yield stafftransactionHistorys_1.default.create({
-                            message: `an amount of ${amount} has been withdrawn from your wallet`,
-                            transactionType: "credit",
-                            // transactionReference: "12345",
-                        });
-                        (_b = getStaffInfo === null || getStaffInfo === void 0 ? void 0 : getStaffInfo.transactionHistory) === null || _b === void 0 ? void 0 : _b.push(new mongoose_1.default.Types.ObjectId(createHisorySender === null || createHisorySender === void 0 ? void 0 : createHisorySender._id));
-                        return res.status(200).json({
-                            message: `an amount of ${amount} has been added`,
-                            data: {
-                                paymentInfo: amount,
-                                paymentData: JSON.parse(JSON.stringify(response.data)),
-                            },
-                        });
-                    }
+                    yield StaffWallet_1.default.findByIdAndUpdate(getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet._id, {
+                        balance: Number((getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet.balance) - amount),
+                    });
+                    const createHisorySender = yield stafftransactionHistorys_1.default.create({
+                        message: `an amount of ${amount} has been withdrawn from your wallet`,
+                        transactionType: "credit",
+                        // transactionReference: "12345",
+                    });
+                    (_b = getStaffInfo === null || getStaffInfo === void 0 ? void 0 : getStaffInfo.transactionHistory) === null || _b === void 0 ? void 0 : _b.push(new mongoose_1.default.Types.ObjectId(createHisorySender === null || createHisorySender === void 0 ? void 0 : createHisorySender._id));
+                    return res.status(200).json({
+                        message: `an amount of ${amount} has been added`,
+                        data: {
+                            paymentInfo: amount,
+                            paymentData: JSON.parse(JSON.stringify(response.data)),
+                        },
+                    });
+                }
+                else if (((_c = response === null || response === void 0 ? void 0 : response.data) === null || _c === void 0 ? void 0 : _c.status) === false) {
+                    return res.status(400).json({
+                        message: "insufficent funds ",
+                        data: `${(_d = response === null || response === void 0 ? void 0 : response.data) === null || _d === void 0 ? void 0 : _d.message}`
+                    });
                 }
                 else {
                     return res.status(404).json({
