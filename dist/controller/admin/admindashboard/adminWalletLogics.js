@@ -504,22 +504,29 @@ const checkOutToBank = (req, res) => __awaiter(void 0, void 0, void 0, function*
             var _a, _b;
             return __awaiter(this, void 0, void 0, function* () {
                 if (((_a = response === null || response === void 0 ? void 0 : response.data) === null || _a === void 0 ? void 0 : _a.status) === true) {
-                    yield StaffWallet_1.default.findByIdAndUpdate(getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet._id, {
-                        balance: Number((getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet.balance) - amount),
-                    });
-                    const createHisorySender = yield stafftransactionHistorys_1.default.create({
-                        message: `an amount of ${amount} has been withdrawn from your wallet`,
-                        transactionType: "credit",
-                        // transactionReference: "12345",
-                    });
-                    (_b = getStaffInfo === null || getStaffInfo === void 0 ? void 0 : getStaffInfo.transactionHistory) === null || _b === void 0 ? void 0 : _b.push(new mongoose_1.default.Types.ObjectId(createHisorySender === null || createHisorySender === void 0 ? void 0 : createHisorySender._id));
-                    return res.status(200).json({
-                        message: `an amount of ${amount} has been added`,
-                        data: {
-                            paymentInfo: amount,
-                            paymentData: JSON.parse(JSON.stringify(response.data)),
-                        },
-                    });
+                    if (amount > (getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet.balance)) {
+                        return res.status(404).json({
+                            message: "insufficent fund.",
+                        });
+                    }
+                    else {
+                        yield StaffWallet_1.default.findByIdAndUpdate(getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet._id, {
+                            balance: Number((getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet.balance) - amount),
+                        });
+                        const createHisorySender = yield stafftransactionHistorys_1.default.create({
+                            message: `an amount of ${amount} has been withdrawn from your wallet`,
+                            transactionType: "credit",
+                            // transactionReference: "12345",
+                        });
+                        (_b = getStaffInfo === null || getStaffInfo === void 0 ? void 0 : getStaffInfo.transactionHistory) === null || _b === void 0 ? void 0 : _b.push(new mongoose_1.default.Types.ObjectId(createHisorySender === null || createHisorySender === void 0 ? void 0 : createHisorySender._id));
+                        return res.status(200).json({
+                            message: `an amount of ${amount} has been added`,
+                            data: {
+                                paymentInfo: amount,
+                                paymentData: JSON.parse(JSON.stringify(response.data)),
+                            },
+                        });
+                    }
                 }
                 else {
                     return res.status(404).json({
