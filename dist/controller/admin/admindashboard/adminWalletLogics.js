@@ -467,18 +467,20 @@ exports.payInToWallet = payInToWallet;
 // };
 const checkOutToBank = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { amount, name, number, cvv, pin, expiry_year, expiry_month, title, description, } = req.body;
+        const { amount, name, number, cvv, pin, expiry_year, expiry_month, title, description, bank, account } = req.body;
+        //account: "0000000000",
+        // bank: "033",
         const getStaffInfo = yield staffAuth_1.default.findById(req.params.staffid);
         var data = JSON.stringify({
             reference: (0, uuid_1.v4)(),
             destination: {
                 type: "bank_account",
-                amount: "100000",
+                amount,
                 currency: "NGN",
                 narration: "Test Transfer Payment",
                 bank_account: {
-                    bank: "033",
-                    account: "0000000000",
+                    bank,
+                    account,
                 },
                 customer: {
                     name: `${getStaffInfo === null || getStaffInfo === void 0 ? void 0 : getStaffInfo.yourName}`,

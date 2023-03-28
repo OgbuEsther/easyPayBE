@@ -528,20 +528,23 @@ export const checkOutToBank = async (req: Request, res: Response) => {
       expiry_month,
       title,
       description,
+      bank,
+      account
     } = req.body;
-
+//account: "0000000000",
+// bank: "033",
     const getStaffInfo = await staffAuth.findById(req.params.staffid);
 
     var data = JSON.stringify({
       reference: uuid(),
       destination: {
         type: "bank_account",
-        amount: "100000",
+        amount,
         currency: "NGN",
         narration: "Test Transfer Payment",
         bank_account: {
-          bank: "033",
-          account: "0000000000",
+          bank,
+          account,
         },
         customer: {
           name: `${getStaffInfo?.yourName}`,
