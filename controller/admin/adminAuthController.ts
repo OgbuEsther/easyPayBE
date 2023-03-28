@@ -61,22 +61,12 @@ export const adminSignin = async (req: Request, res: Response) => {
 
     const admin = await adminAuth.findOne({ companyEmail });
 
-    if(admin?.password !== password){
+    if(admin?.password !== password || admin?.companyEmail !== companyEmail || admin?.companyname !== companyname){
       return res.status(400).json({
-        messgae : "incorrect password"
+        messgae : "incorrect details"
       })
     }
-
-    else if(admin?.companyEmail !== companyEmail){
-      return res.status(400).json({
-        messgae : "incorrect email"
-      })
-    }
-   else if(admin?.companyname !== companyname){
-      return res.status(400).json({
-        messgae : "this is not the company name you signed up with"
-      })
-    }else{
+   else{
       return res.status(200).json({
       message: "Success , admin is logged in",
       data: admin,

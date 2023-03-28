@@ -64,19 +64,9 @@ const adminSignin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { companyEmail, password, companyname } = req.body;
         const admin = yield adminAuth_1.default.findOne({ companyEmail });
-        if ((admin === null || admin === void 0 ? void 0 : admin.password) !== password) {
+        if ((admin === null || admin === void 0 ? void 0 : admin.password) !== password || (admin === null || admin === void 0 ? void 0 : admin.companyEmail) !== companyEmail || (admin === null || admin === void 0 ? void 0 : admin.companyname) !== companyname) {
             return res.status(400).json({
-                messgae: "incorrect password"
-            });
-        }
-        else if ((admin === null || admin === void 0 ? void 0 : admin.companyEmail) !== companyEmail) {
-            return res.status(400).json({
-                messgae: "incorrect email"
-            });
-        }
-        else if ((admin === null || admin === void 0 ? void 0 : admin.companyname) !== companyname) {
-            return res.status(400).json({
-                messgae: "this is not the company name you signed up with"
+                messgae: "incorrect details"
             });
         }
         else {
