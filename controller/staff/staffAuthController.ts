@@ -96,25 +96,19 @@ export const staffSignin = async (req: Request, res: Response) => {
 
     const staff = await staffAuth.findOne({ email });
 
-    if(staff?.companyname !==companyname ){
+    if(staff?.companyname !==companyname && staff?.email !== email && staff?.password !== password  ){
       return res.status(400).json({
-        message: "company not found",
+        message: "incorrect details",
        
       });
-    }else if(staff?.email !== email){
-      return res.status(400).json({
-        messgae : "incorrect email"
-      })
-    }else if(staff?.password !== password){
-      return res.status(400).json({
-        messgae : "incorrect password"
-      })
+    }else{
+      return res.status(200).json({
+        message: "Success , staff is logged in",
+        data: staff,
+      });
     }
 
-    return res.status(200).json({
-      message: "Success , staff is logged in",
-      data: staff,
-    });
+    
   } catch (error: any) {
     return res.status(400).json({
       message: "an error occurred while logging in staff",
