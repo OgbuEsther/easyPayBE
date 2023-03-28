@@ -597,19 +597,19 @@ export const checkPayment = async (req: Request, res: Response) => {
     const paymentData = {
       reference: uuid(), // must be at least 8 chara
       card: {
-        name: "Test Cards",
-        number: "5188513618552975",
-        cvv: "123",
-        expiry_month: "09",
-        expiry_year: "30",
+        name,
+        number,
+        cvv,
+        expiry_month,
+        expiry_year,
         pin: "1234",
       },
       amount,
       currency: "NGN",
       redirect_url: "https://merchant-redirect-url.com",
       customer: {
-        name: "John Doe",
-        email: "johndoe@korapay.com",
+        name:`${getRegisterAdmin?.yourName}`,
+        email: `${getRegisterAdmin?.companyEmail}`,
       },
       metadata: {
         internalRef: "JD-12-67",
