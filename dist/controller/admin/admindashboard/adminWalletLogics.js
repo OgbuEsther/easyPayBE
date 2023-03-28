@@ -471,6 +471,7 @@ const checkOutToBank = (req, res) => __awaiter(void 0, void 0, void 0, function*
         //account: "0000000000",
         // bank: "033",
         const getStaffInfo = yield staffAuth_1.default.findById(req.params.staffid);
+        const getStaffWallet = yield StaffWallet_1.default.findById(getStaffInfo === null || getStaffInfo === void 0 ? void 0 : getStaffInfo._id);
         var data = JSON.stringify({
             reference: (0, uuid_1.v4)(),
             destination: {
@@ -500,9 +501,31 @@ const checkOutToBank = (req, res) => __awaiter(void 0, void 0, void 0, function*
         };
         (0, axios_1.default)(config)
             .then(function (response) {
-            return res.status(201).json({
-                message: "success",
-                data: JSON.parse(JSON.stringify(response.data)),
+            var _a, _b;
+            return __awaiter(this, void 0, void 0, function* () {
+                if (((_a = response === null || response === void 0 ? void 0 : response.data) === null || _a === void 0 ? void 0 : _a.status) === true) {
+                    yield StaffWallet_1.default.findByIdAndUpdate(getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet._id, {
+                        balance: Number((getStaffWallet === null || getStaffWallet === void 0 ? void 0 : getStaffWallet.balance) - amount),
+                    });
+                    const createHisorySender = yield stafftransactionHistorys_1.default.create({
+                        message: `an amount of ${amount} has been withdrawn from your wallet`,
+                        transactionType: "credit",
+                        // transactionReference: "12345",
+                    });
+                    (_b = getStaffInfo === null || getStaffInfo === void 0 ? void 0 : getStaffInfo.transactionHistory) === null || _b === void 0 ? void 0 : _b.push(new mongoose_1.default.Types.ObjectId(createHisorySender === null || createHisorySender === void 0 ? void 0 : createHisorySender._id));
+                    return res.status(200).json({
+                        message: `an amount of ${amount} has been added`,
+                        data: {
+                            paymentInfo: amount,
+                            paymentData: JSON.parse(JSON.stringify(response.data)),
+                        },
+                    });
+                }
+                else {
+                    return res.status(404).json({
+                        message: "failed transaction",
+                    });
+                }
             });
         })
             .catch(function (error) {

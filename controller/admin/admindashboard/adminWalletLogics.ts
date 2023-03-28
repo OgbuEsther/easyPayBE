@@ -534,7 +534,7 @@ export const checkOutToBank = async (req: Request, res: Response) => {
 //account: "0000000000",
 // bank: "033",
     const getStaffInfo = await staffAuth.findById(req.params.staffid);
-
+const getStaffWallet = await staffWalletModel.findById(getStaffInfo?._id)
     var data = JSON.stringify({
       reference: uuid(),
       destination: {
@@ -565,11 +565,36 @@ export const checkOutToBank = async (req: Request, res: Response) => {
     };
 
     axios(config)
-      .then(function (response) {
-        return res.status(201).json({
-          message: "success",
-          data: JSON.parse(JSON.stringify(response.data)),
-        });
+      .then(async function (response) {
+        if(response?.data?.status === true){
+          await staffWalletModel.findByIdAndUpdate(getStaffWallet?._id ,{
+            balance: Number(getStaffWallet?.balance! - amount ),
+          })
+
+          const createHisorySender = await staffTransactionHistory.create({
+            message: `an amount of ${amount} has been withdrawn from your wallet`,
+            transactionType: "credit",
+            // transactionReference: "12345",
+          });
+
+          getStaffInfo?.transactionHistory?.push(
+            new mongoose.Types.ObjectId(createHisorySender?._id)
+          );
+
+          return res.status(200).json({
+            message: `an amount of ${amount} has been added`,
+            data: {
+              paymentInfo: amount,
+              paymentData: JSON.parse(JSON.stringify(response.data)),
+            },
+          });
+
+        }else {
+          return res.status(404).json({
+            message: "failed transaction",
+          });
+        }
+        
       })
       .catch(function (error) {
         console.log(error);
