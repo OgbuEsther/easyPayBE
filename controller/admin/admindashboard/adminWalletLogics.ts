@@ -103,31 +103,31 @@ export const staffWithPlans = async (req: Request, res: Response) => {
     //get details of the admin sending the money
     const getAdmin = await adminAuth.findById(req.params.adminId);
     const getAdminWallet = await adminWalletModel.findById(getAdmin?._id);
-    console.log("part 1");
+    console.log("part 1")
 
     ///get the details of the staff you want to pay
     const getStaff = await staffAuth.findOne({ walletNumber });
     const getStaffWallet = await staffWalletModel.findById(getStaff?._id);
-    console.log("part 2");
+    console.log("part 2")
 
     //get staff with either plans
 
     const getHousePlan = await houseModel.findById(getStaff?._id);
-    const getTravelPlan = await travelModel.findById(getStaff?._id);
-    const getSchool = await feesModel.findById(getStaff?._id);
-    console.log("checking get details");
+    const getTravelPlan = await travelModel.findById(getStaff?._id)
+    const getSchool = await feesModel.findById(getStaff?._id)
+console.log("checking get details")
     if (amount > getAdminWallet?.balance!) {
       return res.status(404).json({
         message: "insufficent fund.",
       });
-    } else if (getHousePlan?.subscribe === true) {
+    }else if (getHousePlan?.subscribe === true) {
       if (getStaff && getAdmin) {
         await adminWalletModel.findByIdAndUpdate(getAdminWallet?._id, {
           balance: getAdminWallet?.balance! - amount,
           credit: 0,
           debit: amount,
         });
-        console.log("house plan balance");
+        console.log("house plan balance")
         const createHisorySender = await adminTransactionHistory.create({
           message: `you have sent ${amount} to ${getStaff?.yourName}`,
           receiver: getStaff?.yourName,
@@ -135,27 +135,27 @@ export const staffWithPlans = async (req: Request, res: Response) => {
           date: getDate,
         });
 
-        console.log("admin history");
+        console.log("admin history")
         getAdmin?.transactionHistory?.push(
           new mongoose.Types.ObjectId(createHisorySender?._id)
         );
         getAdmin?.save();
 
         const total = amount - getHousePlan.percentageRate;
-        console.log("final");
+console.log("final")
         await staffWalletModel.findByIdAndUpdate(getStaffWallet?._id, {
           balance: Number(getStaffWallet?.balance! + total),
           credit: amount,
           debit: 0,
         });
-        console.log("staff house plan balance");
+        console.log("staff house plan balance")
 
         await houseModel.findByIdAndUpdate(getHousePlan?._id, {
           percentageRate: getHousePlan?.percentageRate,
-          totalBal: getHousePlan.totalBal + getHousePlan?.percentageRate,
+          totalBal: getHousePlan.totalBal +getHousePlan?.percentageRate,
           subscribe: true,
         });
-        console.log("house plan balance");
+        console.log('house plan balance')
 
         const createHisoryReciever = await staffTransactionHistory.create({
           message: `an amount of ${amount} has been sent to you by ${getAdmin?.companyname} but the sum of ${getHousePlan?.percentageRate} has been deducted`,
@@ -168,25 +168,25 @@ export const staffWithPlans = async (req: Request, res: Response) => {
         );
         getStaff?.save();
       }
-      console.log("testing");
+console.log("testing")
       return res.status(200).json({
         message: "Transaction successfull",
       });
-    } else if (getTravelPlan?.subscribe === true) {
+    } else if(getTravelPlan?.subscribe === true){
       if (getStaff && getAdmin) {
         await adminWalletModel.findByIdAndUpdate(getAdminWallet?._id, {
           balance: getAdminWallet?.balance! - amount,
           credit: 0,
           debit: amount,
         });
-        console.log("testing again");
+        console.log("testing again")
         const createHisorySender = await adminTransactionHistory.create({
           message: `you have sent ${amount} to ${getStaff?.yourName}`,
           receiver: getStaff?.yourName,
           transactionReference: referenceGeneratedNumber,
           date: getDate,
         });
-        console.log("testwusagd");
+        console.log('testwusagd')
 
         getAdmin?.transactionHistory?.push(
           new mongoose.Types.ObjectId(createHisorySender?._id)
@@ -201,16 +201,12 @@ export const staffWithPlans = async (req: Request, res: Response) => {
           debit: 0,
         });
 
-        console.log("another balance");
-        await travelModel.findByIdAndUpdate(
-          getTravelPlan?._id,
-          {
-            percentageRate: getTravelPlan?.percentageRate,
-            totalBal: getTravelPlan.totalBal + getTravelPlan?.percentageRate,
-            subscribe: true,
-          },
-          { new: true }
-        );
+        console.log("another balance")
+        await travelModel.findByIdAndUpdate(getTravelPlan?._id, {
+          percentageRate: getTravelPlan?.percentageRate,
+          totalBal: getTravelPlan.totalBal +getTravelPlan?.percentageRate ,
+          subscribe: true,
+        } , {new :true});
 
         const createHisoryReciever = await staffTransactionHistory.create({
           message: `an amount of ${amount} was sent to you by ${getAdmin?.companyname} but the sum of ${getTravelPlan?.percentageRate} has been deducted as part of your subscribed plans`,
@@ -218,7 +214,7 @@ export const staffWithPlans = async (req: Request, res: Response) => {
           receiver: getAdmin?.yourName,
           transactionReference: referenceGeneratedNumber,
         });
-        console.log("hgssfdhdfs");
+        console.log("hgssfdhdfs")
         getStaff?.transactionHistory?.push(
           new mongoose.Types.ObjectId(createHisoryReciever?._id)
         );
@@ -227,21 +223,21 @@ export const staffWithPlans = async (req: Request, res: Response) => {
       return res.status(200).json({
         message: "Transaction successfull",
       });
-    } else if (getSchool?.subscribe === true) {
+    }else if(getSchool?.subscribe === true){
       if (getStaff && getAdmin) {
         await adminWalletModel.findByIdAndUpdate(getAdminWallet?._id, {
           balance: getAdminWallet?.balance! - amount,
           credit: 0,
           debit: amount,
         });
-        console.log("gwuywrtshua");
+        console.log("gwuywrtshua")
         const createHisorySender = await adminTransactionHistory.create({
           message: `you have sent ${amount} to ${getStaff?.yourName}`,
           receiver: getStaff?.yourName,
           transactionReference: referenceGeneratedNumber,
           date: getDate,
         });
-        console.log("fwsytarsghs");
+        console.log("fwsytarsghs")
 
         getAdmin?.transactionHistory?.push(
           new mongoose.Types.ObjectId(createHisorySender?._id)
@@ -256,11 +252,11 @@ export const staffWithPlans = async (req: Request, res: Response) => {
           debit: 0,
         });
 
-        console.log("ytwyewerew");
+        console.log('ytwyewerew')
 
         await feesModel.findByIdAndUpdate(getSchool?._id, {
           percentageRate: getSchool?.percentageRate,
-          totalBal: getSchool.totalBal + getSchool?.percentageRate,
+          totalBal: getSchool.totalBal +getSchool?.percentageRate,
           subscribe: true,
         });
 
@@ -278,7 +274,7 @@ export const staffWithPlans = async (req: Request, res: Response) => {
       return res.status(200).json({
         message: "Transaction successfull",
       });
-    } else {
+    }else {
       return res.status(404).json({
         message: "Account not found or insufficient money",
       });
@@ -317,7 +313,7 @@ export const fundWalletFromBank = async (req: Request, res: Response) => {
       message: "Wallet updated successfully",
     });
   } catch (err) {
-    console.log("here", err);
+    console.log("here",err)
     return res.status(404).json({
       message: "an error occurred",
       err,
@@ -533,12 +529,12 @@ export const checkOutToBank = async (req: Request, res: Response) => {
       title,
       description,
       bank,
-      account,
+      account
     } = req.body;
-    //account: "0000000000",
-    // bank: "033",
+//account: "0000000000",
+// bank: "033",
     const getStaffInfo = await staffAuth.findById(req.params.staffid);
-    const getStaffWallet = await staffWalletModel.findById(getStaffInfo?._id);
+const getStaffWallet = await staffWalletModel.findById(getStaffInfo?._id)
     var data = JSON.stringify({
       reference: uuid(),
       destination: {
@@ -570,39 +566,42 @@ export const checkOutToBank = async (req: Request, res: Response) => {
 
     axios(config)
       .then(async function (response) {
-        if (response?.data?.status === true) {
-          if (amount > getStaffWallet?.balance!) {
-            return res.status(400).json({
-              message: "insufficent funds",
-            });
-          } else {
-            await staffWalletModel.findByIdAndUpdate(getStaffWallet?._id, {
-              balance: Number(getStaffWallet?.balance! - amount),
-            });
+        if(response?.data?.status === true){
+          
+          await staffWalletModel.findByIdAndUpdate(getStaffWallet?._id ,{
+            balance: Number(getStaffWallet?.balance! - amount ),
+          })
 
-            const createHisorySender = await staffTransactionHistory.create({
-              message: `an amount of ${amount} has been withdrawn from your wallet`,
-              transactionType: "credit",
-              // transactionReference: "12345",
-            });
+          const createHisorySender = await staffTransactionHistory.create({
+            message: `an amount of ${amount} has been withdrawn from your wallet`,
+            transactionType: "credit",
+            // transactionReference: "12345",
+          });
 
-            getStaffInfo?.transactionHistory?.push(
-              new mongoose.Types.ObjectId(createHisorySender?._id)
-            );
+          getStaffInfo?.transactionHistory?.push(
+            new mongoose.Types.ObjectId(createHisorySender?._id)
+          );
 
-            return res.status(200).json({
-              message: `an amount of ${amount} has been added`,
-              data: {
-                paymentInfo: amount,
-                paymentData: JSON.parse(JSON.stringify(response.data)),
-              },
-            });
-          }
-        } else {
+          return res.status(200).json({
+            message: `an amount of ${amount} has been added`,
+            data: {
+              paymentInfo: amount,
+              paymentData: JSON.parse(JSON.stringify(response.data)),
+            },
+          });
+
+        }else if (response?.data?.status === false){
+
+          return res.status(400).json({
+            message : "insufficent funds ",
+            data : `${response?.data?.message}`
+          })
+        }else {
           return res.status(404).json({
             message: "failed transaction",
           });
         }
+        
       })
       .catch(function (error) {
         console.log(error);
@@ -644,7 +643,7 @@ export const checkPayment = async (req: Request, res: Response) => {
       currency: "NGN",
       redirect_url: "https://merchant-redirect-url.com",
       customer: {
-        name: `${getRegisterAdmin?.yourName}`,
+        name:`${getRegisterAdmin?.yourName}`,
         email: `${getRegisterAdmin?.companyEmail}`,
       },
       metadata: {
