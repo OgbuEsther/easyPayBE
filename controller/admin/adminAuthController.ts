@@ -55,25 +55,32 @@ export const adminSignup = async (req: Request, res: Response) => {
 
 export const adminSignin = async (req: Request, res: Response) => {
   try {
-    const { companyEmail, password , companyname } = req.body;
+    const { companyEmail, password, companyname } = req.body;
 
   
 
     const admin = await adminAuth.findOne({ companyEmail });
 
-    if(admin?.password !== password || admin?.companyEmail !== companyEmail || admin?.companyname !== companyname){
-      return res.status(400).json({
-        messgae : "incorrect details"
-      })
-    }
-   else{
-      return res.status(200).json({
-      message: "Success , admin is logged in",
-      data: admin,
-    });
+    
+
+    if (admin?.companyname! !== companyname){
+      return;
+    }else{
+      const check = await bcrypt.compare(password, admin?.password!)
+
+      if(check){
+        res.status(201).json({
+          message: "welcome",
+          data: admin
+        })
+      }else{
+        console.log("bad")
+        return res.status(400).json({
+          message : "login failed"
+        })
+      }
     }
 
-    
   } catch (error: any) {
     return res.status(400).json({
       message: "an error occurred while creating admin",

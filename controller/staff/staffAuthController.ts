@@ -96,19 +96,28 @@ export const staffSignin = async (req: Request, res: Response) => {
 
     const staff = await staffAuth.findOne({ email });
 
-    if(staff?.companyname !==companyname && staff?.email !== email && staff?.password !== password  ){
-      return res.status(400).json({
-        message: "incorrect details",
-       
-      });
+    if (staff?.companyname! !== companyname){
+      return;
     }else{
-      return res.status(200).json({
-        message: "Success , staff is logged in",
-        data: staff,
-      });
+      const check = await bcrypt.compare(password, staff?.password!)
+
+      if(check){
+        res.status(201).json({
+          message: "welcome",
+          data: staff
+        })
+      }else{
+        console.log("bad")
+        return res.status(400).json({
+          message : "login failed"
+        })
+      }
     }
 
-    
+    return res.status(200).json({
+      message: "Success , staff is logged in",
+      data: staff,
+    });
   } catch (error: any) {
     return res.status(400).json({
       message: "an error occurred while logging in staff",

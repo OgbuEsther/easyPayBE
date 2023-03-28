@@ -84,17 +84,28 @@ const staffSignin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { companyname, email, password } = req.body;
         const staff = yield staffAuth_1.default.findOne({ email });
-        if ((staff === null || staff === void 0 ? void 0 : staff.companyname) !== companyname && (staff === null || staff === void 0 ? void 0 : staff.email) !== email && (staff === null || staff === void 0 ? void 0 : staff.password) !== password) {
-            return res.status(400).json({
-                message: "incorrect details",
-            });
+        if ((staff === null || staff === void 0 ? void 0 : staff.companyname) !== companyname) {
+            return;
         }
         else {
-            return res.status(200).json({
-                message: "Success , staff is logged in",
-                data: staff,
-            });
+            const check = yield bcrypt_1.default.compare(password, staff === null || staff === void 0 ? void 0 : staff.password);
+            if (check) {
+                res.status(201).json({
+                    message: "welcome",
+                    data: staff
+                });
+            }
+            else {
+                console.log("bad");
+                return res.status(400).json({
+                    message: "login failed"
+                });
+            }
         }
+        return res.status(200).json({
+            message: "Success , staff is logged in",
+            data: staff,
+        });
     }
     catch (error) {
         return res.status(400).json({
