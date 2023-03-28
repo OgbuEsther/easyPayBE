@@ -64,16 +64,23 @@ const adminSignin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { companyEmail, password, companyname } = req.body;
         const admin = yield adminAuth_1.default.findOne({ companyEmail });
-        if ((admin === null || admin === void 0 ? void 0 : admin.password) !== password || (admin === null || admin === void 0 ? void 0 : admin.companyEmail) !== companyEmail || (admin === null || admin === void 0 ? void 0 : admin.companyname) !== companyname) {
-            return res.status(400).json({
-                messgae: "incorrect details"
-            });
+        if ((admin === null || admin === void 0 ? void 0 : admin.companyname) !== companyname) {
+            return;
         }
         else {
-            return res.status(200).json({
-                message: "Success , admin is logged in",
-                data: admin,
-            });
+            const check = yield bcrypt_1.default.compare(password, admin === null || admin === void 0 ? void 0 : admin.password);
+            if (check) {
+                res.status(201).json({
+                    message: "welcome",
+                    data: admin
+                });
+            }
+            else {
+                console.log("bad");
+                return res.status(400).json({
+                    message: "login failed"
+                });
+            }
         }
     }
     catch (error) {
