@@ -103,17 +103,19 @@ export const staffWithPlans = async (req: Request, res: Response) => {
     //get details of the admin sending the money
     const getAdmin = await adminAuth.findById(req.params.adminId);
     const getAdminWallet = await adminWalletModel.findById(getAdmin?._id);
+    console.log("part 1")
 
     ///get the details of the staff you want to pay
     const getStaff = await staffAuth.findOne({ walletNumber });
     const getStaffWallet = await staffWalletModel.findById(getStaff?._id);
+    console.log("part 2")
 
     //get staff with either plans
 
     const getHousePlan = await houseModel.findById(getStaff?._id);
     const getTravelPlan = await travelModel.findById(getStaff?._id)
     const getSchool = await feesModel.findById(getStaff?._id)
-
+console.log("checking get details")
     if (amount > getAdminWallet?.balance!) {
       return res.status(404).json({
         message: "insufficent fund.",
@@ -125,6 +127,7 @@ export const staffWithPlans = async (req: Request, res: Response) => {
           credit: 0,
           debit: amount,
         });
+        console.log("house plan balance")
         const createHisorySender = await adminTransactionHistory.create({
           message: `you have sent ${amount} to ${getStaff?.yourName}`,
           receiver: getStaff?.yourName,
@@ -132,24 +135,27 @@ export const staffWithPlans = async (req: Request, res: Response) => {
           date: getDate,
         });
 
+        console.log("admin history")
         getAdmin?.transactionHistory?.push(
           new mongoose.Types.ObjectId(createHisorySender?._id)
         );
         getAdmin?.save();
 
         const total = amount - getHousePlan.percentageRate;
-
+console.log("final")
         await staffWalletModel.findByIdAndUpdate(getStaffWallet?._id, {
-          balance: getStaffWallet?.balance! + total,
+          balance: Number(getStaffWallet?.balance! + total),
           credit: amount,
           debit: 0,
         });
+        console.log("staff house plan balance")
 
         await houseModel.findByIdAndUpdate(getHousePlan?._id, {
           percentageRate: getHousePlan?.percentageRate,
           totalBal: getHousePlan.totalBal +getHousePlan?.percentageRate,
           subscribe: true,
         });
+        console.log('house plan balance')
 
         const createHisoryReciever = await staffTransactionHistory.create({
           message: `an amount of ${amount} has been sent to you by ${getAdmin?.companyname} but the sum of ${getHousePlan?.percentageRate} has been deducted`,
@@ -162,7 +168,7 @@ export const staffWithPlans = async (req: Request, res: Response) => {
         );
         getStaff?.save();
       }
-
+console.log("testing")
       return res.status(200).json({
         message: "Transaction successfull",
       });
@@ -173,12 +179,14 @@ export const staffWithPlans = async (req: Request, res: Response) => {
           credit: 0,
           debit: amount,
         });
+        console.log("testing again")
         const createHisorySender = await adminTransactionHistory.create({
           message: `you have sent ${amount} to ${getStaff?.yourName}`,
           receiver: getStaff?.yourName,
           transactionReference: referenceGeneratedNumber,
           date: getDate,
         });
+        console.log('testwusagd')
 
         getAdmin?.transactionHistory?.push(
           new mongoose.Types.ObjectId(createHisorySender?._id)
@@ -193,6 +201,7 @@ export const staffWithPlans = async (req: Request, res: Response) => {
           debit: 0,
         });
 
+        console.log("another balance")
         await travelModel.findByIdAndUpdate(getTravelPlan?._id, {
           percentageRate: getTravelPlan?.percentageRate,
           totalBal: getTravelPlan.totalBal +getTravelPlan?.percentageRate ,
@@ -205,6 +214,7 @@ export const staffWithPlans = async (req: Request, res: Response) => {
           receiver: getAdmin?.yourName,
           transactionReference: referenceGeneratedNumber,
         });
+        console.log("hgssfdhdfs")
         getStaff?.transactionHistory?.push(
           new mongoose.Types.ObjectId(createHisoryReciever?._id)
         );
@@ -220,12 +230,14 @@ export const staffWithPlans = async (req: Request, res: Response) => {
           credit: 0,
           debit: amount,
         });
+        console.log("gwuywrtshua")
         const createHisorySender = await adminTransactionHistory.create({
           message: `you have sent ${amount} to ${getStaff?.yourName}`,
           receiver: getStaff?.yourName,
           transactionReference: referenceGeneratedNumber,
           date: getDate,
         });
+        console.log("fwsytarsghs")
 
         getAdmin?.transactionHistory?.push(
           new mongoose.Types.ObjectId(createHisorySender?._id)
@@ -239,6 +251,8 @@ export const staffWithPlans = async (req: Request, res: Response) => {
           credit: amount,
           debit: 0,
         });
+
+        console.log('ytwyewerew')
 
         await feesModel.findByIdAndUpdate(getSchool?._id, {
           percentageRate: getSchool?.percentageRate,
@@ -299,6 +313,7 @@ export const fundWalletFromBank = async (req: Request, res: Response) => {
       message: "Wallet updated successfully",
     });
   } catch (err) {
+    console.log("here",err)
     return res.status(404).json({
       message: "an error occurred",
       err,
