@@ -15,6 +15,9 @@ const StaffAuth = new mongoose_1.default.Schema({
     plans: {
         type: Boolean
     },
+    amount: {
+        type: Number
+    },
     email: {
         type: String,
         required: true,

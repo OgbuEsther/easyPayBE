@@ -17,6 +17,9 @@ const StaffAuth = new mongoose.Schema<staffSignUp>(
     plans: {
       type : Boolean
     },
+    amount: {
+type:Number
+    },
   
     email: {
       type: String,
