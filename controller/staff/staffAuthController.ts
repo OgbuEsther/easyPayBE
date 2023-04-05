@@ -7,22 +7,23 @@ import feesModel from "../../model/staff/staffDashboard/staffFees";
 import houseModel from "../../model/staff/staffDashboard/StaffHouse";
 import investModel from "../../model/staff/staffDashboard/staffInvestment";
 import adminAuth from "../../model/admin/adminAuth";
-import otpgenerator from "otp-generator"
+import otpgenerator from "otp-generator";
 
 export const staffSignup = async (req: Request, res: Response) => {
   try {
-    const { companyname, email, yourName, password, position ,walletNumber } = req.body;
+    const { companyname, email, yourName, password, position, walletNumber } =
+      req.body;
 
-    const getAdmin = await adminAuth.findOne({companyname});
+    const getAdmin = await adminAuth.findOne({ companyname });
 
-     const salt = await bcrypt.genSalt(10);
-     const hash = await bcrypt.hash(password, salt);
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
 
-     const dater = Date.now();
+    const dater = Date.now();
 
-     const generateNumber = Math.floor(Math.random() * 78) + dater;
+    const generateNumber = Math.floor(Math.random() * 78) + dater;
 
-     const genCode = otpgenerator.generate(6, {
+    const genCode = otpgenerator.generate(6, {
       upperCaseAlphabets: false,
       specialChars: false,
       digits: true,
@@ -37,12 +38,12 @@ export const staffSignup = async (req: Request, res: Response) => {
       password: hash,
       position,
       walletNumber: generateNumber,
+      amount: 0,
     });
 
-    if  (getAdmin?.companyname === staff?.companyname){
-
-       getAdmin.viewUser.push(new mongoose.Types.ObjectId(staff?._id))
-       getAdmin.save();
+    if (getAdmin?.companyname === staff?.companyname) {
+      getAdmin.viewUser.push(new mongoose.Types.ObjectId(staff?._id));
+      getAdmin.save();
 
       const createWallet = await staffWalletModel.create({
         _id: staff?._id,
@@ -50,39 +51,30 @@ export const staffSignup = async (req: Request, res: Response) => {
         credit: 0,
         debit: 0,
       });
- 
+
       staff?.wallet.push(new mongoose.Types.ObjectId(createWallet?._id));
- 
+
       staff.save();
-    
+
       return res.status(200).json({
         status: 200,
         message: "Staff created successfully",
         data: staff,
       });
-    }else{
+    } else {
       return res.status(400).json({
-        message : "unable to create staff under this company name"
-
-      })
+        message: "unable to create staff under this company name",
+      });
     }
 
-    const house = await houseModel.create ({
+    const house = await houseModel.create({});
 
-    })
+    const fees = await feesModel.create({});
 
-    const fees = await feesModel.create({
-
-    })
-
-const invest = await investModel.create({
-  
-})
-
- 
+    const invest = await investModel.create({});
   } catch (error: any) {
     console.log("error", error);
-    
+
     return res.status(400).json({
       message: "an error occurred while creating staff",
       data: error.message,
@@ -96,21 +88,21 @@ export const staffSignin = async (req: Request, res: Response) => {
 
     const staff = await staffAuth.findOne({ email });
 
-    if (staff?.companyname! !== companyname){
+    if (staff?.companyname! !== companyname) {
       return;
-    }else{
-      const check = await bcrypt.compare(password, staff?.password!)
+    } else {
+      const check = await bcrypt.compare(password, staff?.password!);
 
-      if(check){
+      if (check) {
         res.status(201).json({
           message: "welcome",
-          data: staff
-        })
-      }else{
-        console.log("bad")
+          data: staff,
+        });
+      } else {
+        console.log("bad");
         return res.status(400).json({
-          message : "login failed"
-        })
+          message: "login failed",
+        });
       }
     }
 
@@ -129,8 +121,7 @@ export const staffSignin = async (req: Request, res: Response) => {
 //get all admins
 export const getAllStaff = async (req: Request, res: Response) => {
   try {
-  
-    const staff = await staffAuth.find()
+    const staff = await staffAuth.find();
 
     return res.status(200).json({
       message: "get all staff",
@@ -149,20 +140,20 @@ export const getOneStaff = async (req: Request, res: Response) => {
   try {
     const staff = await staffAuth.findById(req.params.staffId).populate([
       {
-        path : "wallet"
+        path: "wallet",
       },
       {
-        path :"transactionHistory"
+        path: "transactionHistory",
       },
       {
-        path :"houseRentPlan"
+        path: "houseRentPlan",
       },
       {
-        path :"schoolFeesPlan"
+        path: "schoolFeesPlan",
       },
       {
-        path :"travelAndTour"
-      }
+        path: "travelAndTour",
+      },
     ]);
 
     return res.status(200).json({
@@ -174,6 +165,34 @@ export const getOneStaff = async (req: Request, res: Response) => {
       message: "failed to get staff",
       data: error,
       err: error.message,
+    });
+  }
+};
+
+//update staff details
+/**  getAdmin.viewUser.push(new mongoose.Types.ObjectId(staff?._id))
+       getAdmin.save();
+ */
+
+export const updateStaff = async (req: Request, res: Response) => {
+  try {
+    const { amount } = req.body;
+
+    const getStaffDetails = await staffAuth.findById(req.params.staffId);
+
+    const update = await staffAuth.findByIdAndUpdate(
+      getStaffDetails?._id,
+      { amount: getStaffDetails?.amount },
+      { new: true }
+    );
+
+    return res.status(201).json({
+      message : "updated staff amount successfully",
+      data : update
+    })
+  } catch (error) {
+    return res.status(400).json({
+      message: "couldn't update staff",
     });
   }
 };
