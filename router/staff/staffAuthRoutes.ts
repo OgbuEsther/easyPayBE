@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  deactivateStaff,
   getAllStaff,
   getOneStaff,
   staffSignin,
@@ -14,5 +15,7 @@ staffAuthRoutes.post("/staffregister", staffSignup);
 staffAuthRoutes.get("/allstaff/", getAllStaff);
 staffAuthRoutes.get("/staff/:staffId", getOneStaff);
 staffAuthRoutes.patch("/updateStaff/:staffId", updateStaff);
+staffAuthRoutes.delete("/deactivateStaff/:staffId", deactivateStaff);
+
 
 export default staffAuthRoutes;

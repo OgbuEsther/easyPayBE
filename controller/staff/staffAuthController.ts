@@ -182,7 +182,7 @@ export const updateStaff = async (req: Request, res: Response) => {
 
     const update = await staffAuth.findByIdAndUpdate(
       getStaffDetails?._id,
-      { amount: getStaffDetails?.amount },
+      { amount: getStaffDetails?.amount + amount },
       { new: true }
     );
 
@@ -190,9 +190,30 @@ export const updateStaff = async (req: Request, res: Response) => {
       message : "updated staff amount successfully",
       data : update
     })
-  } catch (error) {
+  } catch (error:any) {
     return res.status(400).json({
       message: "couldn't update staff",
+      data : error,
+      error : error.message
     });
   }
 };
+
+
+//deactivate a staff
+export const deactivateStaff = async(req:Request , res:Response)=>{
+  try {
+    const removeStaff = await staffAuth.findByIdAndRemove(req.params.staffId)
+
+    return res.status(200).json({
+      message : "deactivated Staff successfully",
+      data : removeStaff
+    })
+  } catch (error:any) {
+    return res.status(400).json({
+      message: "couldn't deactivate staff",
+      data : error,
+      error : error.message
+    });
+  }
+}

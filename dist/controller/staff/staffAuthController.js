@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOneStaff = exports.getAllStaff = exports.staffSignin = exports.staffSignup = void 0;
+exports.updateStaff = exports.getOneStaff = exports.getAllStaff = exports.staffSignin = exports.staffSignup = void 0;
 const staffAuth_1 = __importDefault(require("../../model/staff/staffAuth"));
 const StaffWallet_1 = __importDefault(require("../../model/staff/staffDashboard/StaffWallet"));
 const mongoose_1 = __importDefault(require("mongoose"));
@@ -44,6 +44,7 @@ const staffSignup = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             password: hash,
             position,
             walletNumber: generateNumber,
+            amount: 0,
         });
         if ((getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.companyname) === (staff === null || staff === void 0 ? void 0 : staff.companyname)) {
             getAdmin.viewUser.push(new mongoose_1.default.Types.ObjectId(staff === null || staff === void 0 ? void 0 : staff._id));
@@ -64,7 +65,7 @@ const staffSignup = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         else {
             return res.status(400).json({
-                message: "unable to create staff under this company name"
+                message: "unable to create staff under this company name",
             });
         }
         const house = yield StaffHouse_1.default.create({});
@@ -92,13 +93,13 @@ const staffSignin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             if (check) {
                 res.status(201).json({
                     message: "welcome",
-                    data: staff
+                    data: staff,
                 });
             }
             else {
                 console.log("bad");
                 return res.status(400).json({
-                    message: "login failed"
+                    message: "login failed",
                 });
             }
         }
@@ -137,20 +138,20 @@ const getOneStaff = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const staff = yield staffAuth_1.default.findById(req.params.staffId).populate([
             {
-                path: "wallet"
+                path: "wallet",
             },
             {
-                path: "transactionHistory"
+                path: "transactionHistory",
             },
             {
-                path: "houseRentPlan"
+                path: "houseRentPlan",
             },
             {
-                path: "schoolFeesPlan"
+                path: "schoolFeesPlan",
             },
             {
-                path: "travelAndTour"
-            }
+                path: "travelAndTour",
+            },
         ]);
         return res.status(200).json({
             message: "gotten one staff",
@@ -166,3 +167,24 @@ const getOneStaff = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getOneStaff = getOneStaff;
+//update staff details
+/**  getAdmin.viewUser.push(new mongoose.Types.ObjectId(staff?._id))
+       getAdmin.save();
+ */
+const updateStaff = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { amount } = req.body;
+        const getStaffDetails = yield staffAuth_1.default.findById(req.params.staffId);
+        const update = yield staffAuth_1.default.findByIdAndUpdate(getStaffDetails === null || getStaffDetails === void 0 ? void 0 : getStaffDetails._id, { amount: (getStaffDetails === null || getStaffDetails === void 0 ? void 0 : getStaffDetails.amount) + amount }, { new: true });
+        return res.status(201).json({
+            message: "updated staff amount successfully",
+            data: update
+        });
+    }
+    catch (error) {
+        return res.status(400).json({
+            message: "couldn't update staff",
+        });
+    }
+});
+exports.updateStaff = updateStaff;
