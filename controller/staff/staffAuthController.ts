@@ -170,13 +170,13 @@ export const getOneStaff = async (req: Request, res: Response) => {
 };
 
 //update staff details
-/**  getAdmin.viewUser.push(new mongoose.Types.ObjectId(staff?._id))
-       getAdmin.save();
- */
+
 
 export const updateStaff = async (req: Request, res: Response) => {
   try {
     const { amount } = req.body;
+
+    const getAdmin = await adminAuth.findById(req.params.adminId)
 
     const getStaffDetails = await staffAuth.findById(req.params.staffId);
 
@@ -185,6 +185,10 @@ export const updateStaff = async (req: Request, res: Response) => {
       { amount: getStaffDetails?.amount + amount },
       { new: true }
     );
+
+    getAdmin?.viewUser.push(new mongoose.Types.ObjectId(update?._id))
+       getAdmin?.save();
+
 
     return res.status(201).json({
       message : "updated staff amount successfully",

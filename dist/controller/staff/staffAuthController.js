@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateStaff = exports.getOneStaff = exports.getAllStaff = exports.staffSignin = exports.staffSignup = void 0;
+exports.deactivateStaff = exports.updateStaff = exports.getOneStaff = exports.getAllStaff = exports.staffSignin = exports.staffSignup = void 0;
 const staffAuth_1 = __importDefault(require("../../model/staff/staffAuth"));
 const StaffWallet_1 = __importDefault(require("../../model/staff/staffDashboard/StaffWallet"));
 const mongoose_1 = __importDefault(require("mongoose"));
@@ -184,7 +184,27 @@ const updateStaff = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     catch (error) {
         return res.status(400).json({
             message: "couldn't update staff",
+            data: error,
+            error: error.message
         });
     }
 });
 exports.updateStaff = updateStaff;
+//deactivate a staff
+const deactivateStaff = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const removeStaff = yield staffAuth_1.default.findByIdAndRemove(req.params.staffId);
+        return res.status(200).json({
+            message: "deactivated Staff successfully",
+            data: removeStaff
+        });
+    }
+    catch (error) {
+        return res.status(400).json({
+            message: "couldn't deactivate staff",
+            data: error,
+            error: error.message
+        });
+    }
+});
+exports.deactivateStaff = deactivateStaff;
