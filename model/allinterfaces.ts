@@ -1,14 +1,18 @@
-export interface adminSignUp {
-  // companyName: string;
-  companyname: string;
-  companyEmail: string;
-  yourName: string;
-  password: string;
-  wallet: {}[];
-  transactionHistory: {}[];
-  viewUser : {}[] ;
-  walletNumber: number;
-  companyCode: string
+import mongoose from "mongoose";
+
+export interface adminSignUp extends mongoose.Document {
+  viewUser: mongoose.Types.Array<mongoose.Types.ObjectId>;
+   // companyName: string;
+   companyname: string;
+   companyEmail: string;
+   yourName: string;
+   password: string;
+   wallet: {}[];
+   transactionHistory: {}[];
+   
+   walletNumber: number;
+   companyCode: string
+  // ... other fields ...
 }
 
 export interface staffSignUp {

@@ -15,7 +15,7 @@ staffAuthRoutes.post("/staffregister", staffSignup);
 staffAuthRoutes.get("/allstaff/", getAllStaff);
 staffAuthRoutes.get("/staff/:staffId", getOneStaff);
 staffAuthRoutes.patch("/updateStaff/:staffId", updateStaff);
-staffAuthRoutes.delete("/deactivateStaff/:staffId", deactivateStaff);
+staffAuthRoutes.delete("/deactivateStaff/:staffId/:adminId", deactivateStaff);
 
 
 export default staffAuthRoutes;
