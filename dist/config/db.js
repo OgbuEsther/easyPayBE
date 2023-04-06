@@ -17,7 +17,7 @@ const DB_URI = "mongodb://0.0.0.0:27017/Easepay1";
 const LIVE_URI = "mongodb+srv://Esther:Esther2004@cluster0.byfqhoj.mongodb.net/EasePayApi?retryWrites=true&w=majority";
 const dbConfig = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const connect = yield mongoose_1.default.connect(DB_URI);
+        const connect = yield mongoose_1.default.connect(LIVE_URI);
         console.log(`database is connected to ${connect.connection.host}`);
     }
     catch (error) {
