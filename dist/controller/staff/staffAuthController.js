@@ -168,14 +168,14 @@ const getOneStaff = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.getOneStaff = getOneStaff;
 //update staff details
-/**  getAdmin.viewUser.push(new mongoose.Types.ObjectId(staff?._id))
-       getAdmin.save();
- */
 const updateStaff = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { amount } = req.body;
+        const getAdmin = yield adminAuth_1.default.findById(req.params.adminId);
         const getStaffDetails = yield staffAuth_1.default.findById(req.params.staffId);
         const update = yield staffAuth_1.default.findByIdAndUpdate(getStaffDetails === null || getStaffDetails === void 0 ? void 0 : getStaffDetails._id, { amount: (getStaffDetails === null || getStaffDetails === void 0 ? void 0 : getStaffDetails.amount) + amount }, { new: true });
+        getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.viewUser.push(new mongoose_1.default.Types.ObjectId(update === null || update === void 0 ? void 0 : update._id));
+        getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.save();
         return res.status(201).json({
             message: "updated staff amount successfully",
             data: update
@@ -193,10 +193,13 @@ exports.updateStaff = updateStaff;
 //deactivate a staff
 const deactivateStaff = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const removeStaff = yield staffAuth_1.default.findByIdAndRemove(req.params.staffId);
+        const getStaff = yield staffAuth_1.default.findById(req.params.staffId);
+        const getAdmin = yield adminAuth_1.default.findById(req.params.adminId);
+        yield (getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.viewUser.pull(new mongoose_1.default.Types.ObjectId(getStaff._id)));
+        yield (getAdmin === null || getAdmin === void 0 ? void 0 : getAdmin.save());
         return res.status(200).json({
             message: "deactivated Staff successfully",
-            data: removeStaff
+            data: getStaff
         });
     }
     catch (error) {
@@ -208,3 +211,44 @@ const deactivateStaff = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.deactivateStaff = deactivateStaff;
+/**const staffMonthlySalary = [
+  {
+    name: "Peter",
+    salary: 500,
+  },
+  {
+    name: "Okus",
+    salary: 1500,
+  },
+  {
+    name: "Vicy",
+    salary: 2500,
+  },
+];
+
+const staff = [
+  {
+    name: "Peter",
+    salary: 5,
+  },
+  {
+    name: "Okus",
+    salary: 15,
+  },
+  {
+    name: "Vicy",
+    salary: 25,
+  },
+];
+
+
+const dataPay = monthlySalary.map((el) => {
+  return staff.map((props) => {
+    return props.name === el.name
+      ? (props.salary = props.salary + el.salary)
+      : null;
+  });
+});
+
+console.log(dataPay.flat().filter((el) => el !== null));
+console.log(staff); */ 
