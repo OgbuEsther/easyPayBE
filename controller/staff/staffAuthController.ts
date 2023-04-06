@@ -207,11 +207,16 @@ export const updateStaff = async (req: Request, res: Response) => {
 //deactivate a staff
 export const deactivateStaff = async(req:Request , res:Response)=>{
   try {
-    const removeStaff = await staffAuth.findByIdAndRemove(req.params.staffId)
+    const getStaff = await staffAuth.findById(req.params.staffId)
+
+    const getAdmin = await adminAuth.findById(req.params.adminId)
+
+    await getAdmin?.viewUser.pull(new mongoose.Types.ObjectId(getStaff!._id));
+    await getAdmin?.save()
 
     return res.status(200).json({
       message : "deactivated Staff successfully",
-      data : removeStaff
+      data : getStaff
     })
   } catch (error:any) {
     return res.status(400).json({
