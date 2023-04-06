@@ -221,3 +221,45 @@ export const deactivateStaff = async(req:Request , res:Response)=>{
     });
   }
 }
+
+/**const staffMonthlySalary = [
+  {
+    name: "Peter",
+    salary: 500,
+  },
+  {
+    name: "Okus",
+    salary: 1500,
+  },
+  {
+    name: "Vicy",
+    salary: 2500,
+  },
+];
+
+const staff = [
+  {
+    name: "Peter",
+    salary: 5,
+  },
+  {
+    name: "Okus",
+    salary: 15,
+  },
+  {
+    name: "Vicy",
+    salary: 25,
+  },
+];
+
+
+const dataPay = monthlySalary.map((el) => {
+  return staff.map((props) => {
+    return props.name === el.name
+      ? (props.salary = props.salary + el.salary)
+      : null;
+  });
+});
+
+console.log(dataPay.flat().filter((el) => el !== null));
+console.log(staff); */
